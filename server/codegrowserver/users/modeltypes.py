@@ -17,37 +17,43 @@ import graphene
 
 class UserProfileType(DjangoObjectType):
     """
-    @description: 用户属性类型
-    @param {type} 
-    @return: 
+    用户属性类型
     """
 
     class Meta:
         model = UserProfile
-        exclude_fields = ["id", "user", "creator", "modifier"]
+        exclude_fields = ["id", "user", "creator", "updater"]
 
 
 class UserProfileCreateType(DjangoInputObjectType):
+    """
+    用户属性创建类型
+    """
+
     class Meta:
         model = UserProfile
         exclude_fields = [
             "id",
             "user",
             "creator",
-            "modifier",
+            "updater",
             "create_time",
             "update_time",
         ]
 
 
 class UserProfileUpdateType(DjangoInputObjectType):
+    """
+    用户属性更新类型
+    """
+
     class Meta:
         model = UserProfile
         exclude_fields = [
             "id",
             "user",
             "creator",
-            "modifier",
+            "updater",
             "create_time",
             "update_time",
         ]
@@ -56,9 +62,7 @@ class UserProfileUpdateType(DjangoInputObjectType):
 
 class UserType(DjangoObjectType):
     """
-    @description: 用户类型
-    @param {type} 
-    @return: 
+    用户类型
     """
 
     profile = graphene.Field(UserProfileType)
@@ -75,6 +79,10 @@ class UserType(DjangoObjectType):
 
 
 class UserCreateType(DjangoInputObjectType):
+    """
+    用户创建类型
+    """
+
     profile = graphene.Field(UserProfileCreateType)
 
     class Meta:
@@ -83,6 +91,10 @@ class UserCreateType(DjangoInputObjectType):
 
 
 class UserUpdateType(DjangoInputObjectType):
+    """
+    用户更新类型
+    """
+
     profile = graphene.Field(UserProfileUpdateType)
 
     class Meta:
@@ -93,28 +105,87 @@ class UserUpdateType(DjangoInputObjectType):
 
 class GroupProfileType(DjangoObjectType):
     """
-    @description: 组属性类型
-    @param {type} 
-    @return: 
+    组属性类型
     """
 
     class Meta:
         model = GroupProfile
-        exclude_fields = ["create_time", "update_time", "id", "group"]
+        exclude_fields = ["creator", "updater", "id", "group"]
+
+
+class GroupProfileCreateType(DjangoInputObjectType):
+    """
+    组属性创建类型
+    """
+
+    class Meta:
+        model = GroupProfile
+        exclude_fields = [
+            "creator",
+            "updater",
+            "id",
+            "group",
+            "create_time",
+            "update_time",
+        ]
+
+
+class GroupProfileUpdateType(DjangoInputObjectType):
+    """
+    组属性更新类型
+    """
+
+    class Meta:
+        model = GroupProfile
+        exclude_fields = [
+            "creator",
+            "updater",
+            "id",
+            "group",
+            "create_time",
+            "update_time",
+        ]
+        input_for = "update"
 
 
 class GroupType(DjangoObjectType):
     """
-    @description: 组类型
-    @param {type} 
-    @return: 
+    组类型
     """
 
     profile = graphene.Field(GroupProfileType)
 
     def resolve_profile(self, info):
+        # 如果没有profile则返回None
+        if not hasattr(self, "profile"):
+            return None
         return self.profile
 
     class Meta:
         model = Group
-        only_fields = ["id", "name"]
+        only_fields = ["id", "name", "profile"]
+
+
+class GroupCreateType(DjangoInputObjectType):
+    """
+    组创建类型
+    """
+
+    profile = graphene.Field(GroupProfileCreateType)
+
+    class Meta:
+        model = Group
+        only_fields = ["name", "profile"]
+
+
+class GroupUpdateType(DjangoInputObjectType):
+    """
+    组更新类型
+    """
+
+    profile = graphene.Field(GroupProfileCreateType)
+
+    class Meta:
+        model = Group
+        only_fields = ["id", "name", "profile"]
+        input_for = "update"

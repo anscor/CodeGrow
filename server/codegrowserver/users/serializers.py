@@ -17,7 +17,7 @@ from users.models import UserProfile, GroupProfile
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = ["name", "age", "user"]
+        exclude = ["create_time", "update_time", "id"]
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -48,3 +48,15 @@ class UserSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+
+
+class GroupProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GroupProfile
+        exclude = ["create_time", "update_time", "id"]
+
+
+class GroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+        fields = "__all__"

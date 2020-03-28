@@ -34,7 +34,6 @@ class UserProfile(models.Model):
     sex = models.BooleanField(
         choices=SEX_CHOICES, verbose_name="性别", default=True
     )
-    name_pinyin = models.CharField(max_length=64, verbose_name="姓名拼音")
     alias = models.CharField(
         max_length=64, blank=True, null=True, verbose_name="昵称"
     )
@@ -50,8 +49,19 @@ class UserProfile(models.Model):
 
 
 class GroupProfile(models.Model):
-    group = models.ForeignKey(
-        Group, on_delete=models.CASCADE, related_name="profile"
+    group = models.OneToOneField(
+        Group,
+        on_delete=models.CASCADE,
+        related_name="profile",
+        verbose_name="组id",
+    )
+    parent_group = models.ForeignKey(
+        Group,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="children_groups",
+        verbose_name="父组id",
     )
     creator = models.ForeignKey(
         User,
