@@ -25,6 +25,13 @@ from users.serializers import (
     GroupProfileSerializer,
     GroupSerializer,
 )
+from users.permissions import (
+    wrap_query_permission,
+    wrap_mutate_permission,
+    IsAuthenticated,
+    IsAdminUser,
+    AllowAny,
+)
 
 
 class Query(object):
@@ -35,9 +42,11 @@ class Query(object):
     all_user = graphene.List(UserType)
     all_group = graphene.List(GroupType)
 
-    def resolve_all_user(self, user, **kwargs):
+    @wrap_query_permission([IsAdminUser])
+    def resolve_all_user(self, info, **kwargs):
         return User.objects.all()
 
+    @wrap_query_permission([IsAdminUser])
     def resolve_all_group(sele, info, **kwargs):
         return Group.objects.all()
 
@@ -50,6 +59,7 @@ class UserMutation(DjangoSerializerMutation):
         nested_fileds = ["profile"]
 
     @classmethod
+    @wrap_mutate_permission([AllowAny])
     def create(cls, root, info, **kwargs):
         """
         @description: 创建用户
@@ -68,6 +78,8 @@ class UserMutation(DjangoSerializerMutation):
             return cls.perform_mutate(user, info)
 
         profile_data["user"] = user.id
+        if info.context.user and info.context.user.is_staff:
+            profile_data["creator"] = info.context.user.id
         profile_ser = UserProfileSerializer(data=profile_data)
         ok, profile = cls.save(profile_ser, root, info)
         if not ok:
@@ -77,6 +89,7 @@ class UserMutation(DjangoSerializerMutation):
         return cls.perform_mutate(user, info)
 
     @classmethod
+    @wrap_mutate_permission([IsAuthenticated])
     def update(cls, root, info, **kwargs):
         """
         @description: 更新用户
@@ -137,6 +150,7 @@ class GroupMutation(DjangoSerializerMutation):
         nested_fileds = ["profile"]
 
     @classmethod
+    @wrap_mutate_permission([IsAdminUser])
     def create(cls, root, info, **kwargs):
         data = kwargs.get("input")
         profile_data = data.pop("profile", None)
@@ -159,6 +173,7 @@ class GroupMutation(DjangoSerializerMutation):
         return cls.perform_mutate(group)
 
     @classmethod
+    @wrap_mutate_permission([IsAdminUser])
     def update(cls, root, info, **kwargs):
         data = kwargs.pop("input")
         profile_data = data.pop("profile", None)
