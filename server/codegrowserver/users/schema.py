@@ -26,6 +26,7 @@ from users.serializers import (
     GroupSerializer,
 )
 from users.permissions import (
+    class_permission,
     wrap_query_permission,
     wrap_mutate_permission,
     IsAuthenticated,
@@ -51,6 +52,7 @@ class Query(object):
         return Group.objects.all()
 
 
+@class_permission([IsAdminUser])
 class UserMutation(DjangoSerializerMutation):
     class Meta:
         serializer_class = UserSerializer
@@ -59,7 +61,6 @@ class UserMutation(DjangoSerializerMutation):
         nested_fileds = ["profile"]
 
     @classmethod
-    @wrap_mutate_permission([AllowAny])
     def create(cls, root, info, **kwargs):
         """
         @description: 创建用户
@@ -89,7 +90,7 @@ class UserMutation(DjangoSerializerMutation):
         return cls.perform_mutate(user, info)
 
     @classmethod
-    @wrap_mutate_permission([IsAuthenticated])
+    # @wrap_mutate_permission([IsAuthenticated])
     def update(cls, root, info, **kwargs):
         """
         @description: 更新用户

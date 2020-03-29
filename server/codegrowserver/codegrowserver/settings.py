@@ -44,9 +44,14 @@ INSTALLED_APPS = [
     "users.apps.UsersConfig",
 ]
 
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    )
+}
+
 GRAPHENE = {
     "SCHEMA": "codegrowserver.schema.schema",
-    "MIDDLEWARE": ["graphql_jwt.middleware.JSONWebTokenMiddleware",],
 }
 
 MIDDLEWARE = [
@@ -63,11 +68,6 @@ MIDDLEWARE = [
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
-
-AUTHENTICATION_BACKENDS = [
-    "graphql_jwt.backends.JSONWebTokenBackend",
-    "django.contrib.auth.backends.ModelBackend",
-]
 
 ROOT_URLCONF = "codegrowserver.urls"
 
@@ -108,7 +108,9 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",},
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+    },
     {
         "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
