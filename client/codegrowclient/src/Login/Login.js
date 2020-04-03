@@ -2,11 +2,12 @@
  * @Author: Anscor
  * @Date: 2020-04-02 21:01:41
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-02 21:51:12
- * @Description: file content
+ * @LastEditTime: 2020-04-03 09:37:56
+ * @Description: 登录、注册相关页面
  */
 import React, { Component } from 'react';
 import { Button, Input } from 'antd';
+import { URL } from '../App'
 
 export default class Login extends Component {
 
@@ -27,7 +28,7 @@ export default class Login extends Component {
     }
 
     login = () => {
-        fetch("http://127.0.0.1:8000/auth/token/obtain/", {
+        fetch(URL + "auth/token/obtain/", {
             method: "POST",
             body: JSON.stringify(this.state),
             headers: {
@@ -45,8 +46,8 @@ export default class Login extends Component {
     render() {
         return (
             <div>
-                <Input placeholder="username" allowClear onChange={this.usernameChange} />
-                <Input.Password placeholder="password" allowClear onChange={this.passwordChange} />
+                <Input placeholder="用户名" allowClear onChange={this.usernameChange} />
+                <Input.Password placeholder="密码" allowClear onChange={this.passwordChange} />
                 <Button type="primary" onClick={this.login}>登录</Button>
             </div>
         )
