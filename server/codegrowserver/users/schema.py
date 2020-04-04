@@ -42,10 +42,15 @@ class Query(object):
 
     all_user = graphene.List(UserType)
     all_group = graphene.List(GroupType)
+    user = graphene.Field(UserType)
 
     @wrap_query_permission([IsAdminUser])
     def resolve_all_user(self, info, **kwargs):
         return User.objects.all()
+
+    @wrap_query_permission([IsAuthenticated])
+    def resolve_user(self, info, **kwargs):
+        return info.context.user
 
     @wrap_query_permission([IsAdminUser])
     def resolve_all_group(sele, info, **kwargs):

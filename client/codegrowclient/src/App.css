@@ -30,6 +30,11 @@
     font-size: large;
 }
 
+#menu_box {
+    float: right;
+    display: flex;
+}
+
 .site-layout .site-layout-background {
     background: #fff;
 }
