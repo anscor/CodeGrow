@@ -42,17 +42,21 @@ class Query(object):
 
     all_user = graphene.List(UserType)
     all_group = graphene.List(GroupType)
+    user = graphene.Field(UserType)
 
     @wrap_query_permission([IsAdminUser])
     def resolve_all_user(self, info, **kwargs):
         return User.objects.all()
+
+    @wrap_query_permission([IsAuthenticated])
+    def resolve_user(self, info, **kwargs):
+        return info.context.user
 
     @wrap_query_permission([IsAdminUser])
     def resolve_all_group(sele, info, **kwargs):
         return Group.objects.all()
 
 
-@class_permission([IsAdminUser])
 class UserMutation(DjangoSerializerMutation):
     class Meta:
         serializer_class = UserSerializer
@@ -90,7 +94,7 @@ class UserMutation(DjangoSerializerMutation):
         return cls.perform_mutate(user, info)
 
     @classmethod
-    # @wrap_mutate_permission([IsAuthenticated])
+    @wrap_mutate_permission([IsAuthenticated])
     def update(cls, root, info, **kwargs):
         """
         @description: 更新用户
@@ -143,6 +147,7 @@ class UserMutation(DjangoSerializerMutation):
         return cls.perform_mutate(user, info)
 
 
+@class_permission([IsAdminUser])
 class GroupMutation(DjangoSerializerMutation):
     class Meta:
         serializer_class = GroupSerializer
@@ -151,7 +156,6 @@ class GroupMutation(DjangoSerializerMutation):
         nested_fileds = ["profile"]
 
     @classmethod
-    @wrap_mutate_permission([IsAdminUser])
     def create(cls, root, info, **kwargs):
         data = kwargs.get("input")
         profile_data = data.pop("profile", None)
@@ -174,7 +178,6 @@ class GroupMutation(DjangoSerializerMutation):
         return cls.perform_mutate(group)
 
     @classmethod
-    @wrap_mutate_permission([IsAdminUser])
     def update(cls, root, info, **kwargs):
         data = kwargs.pop("input")
         profile_data = data.pop("profile", None)

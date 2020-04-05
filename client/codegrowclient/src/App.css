@@ -1,0 +1,40 @@
+#root {
+    height: 100%;
+}
+
+.layout {
+    min-height: 100%;
+}
+
+.logo {
+    width: 200px;
+    height: 31px;
+    margin: 16px 24px 16px 0;
+    float: left;
+    color: white;
+    align-content: center;
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    height: inherit;
+}
+
+.logo p {
+    color: white;
+    font-weight: 600;
+    align-content: center;
+    margin: 0px;
+    margin-left: 15px;
+    font-size: large;
+}
+
+#menu_box {
+    float: right;
+    display: flex;
+}
+
+.site-layout .site-layout-background {
+    background: #fff;
+}
