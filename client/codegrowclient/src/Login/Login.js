@@ -2,7 +2,7 @@
  * @Author: Anscor
  * @Date: 2020-04-02 21:01:41
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-04 21:48:14
+ * @LastEditTime: 2020-04-05 19:22:09
  * @Description: 登录、注册相关页面
  */
 import React, { Component } from 'react';
@@ -29,18 +29,26 @@ export default class Login extends Component {
             headers: {
                 'content-type': 'application/json'
             }
-        }).then(res => res.json()).then(data => {
+        }).then(res => {
+            if (res.status != 200) {
+                this.setState({ loading: false });
+                throw new Error("登录失败！");
+            }
+            return res.json();
+        }).then(data => {
+            // 设置获取到的Token
             localStorage.setItem('access', data['access']);
             localStorage.setItem('refresh', data['refresh']);
             message.success("登录成功！");
+            // 跳转到主页
             this.props.history.push({
                 pathname: "/main/",
                 state: {
-                    isLogin: true,
-                    // history: this.props.history
+                    isLogin: true
                 }
-            })
+            });
         }).catch((err) => {
+            // 其他错误
             message.error(err.toString());
             this.setState({ loading: false });
             console.log(err);
@@ -93,16 +101,16 @@ export default class Login extends Component {
 }
 
 
-function refreshToken(refresh) {
+function refreshToken(handleCheck) {
     /**
      * @description: 刷新Token
      * @param {type} 
      * @return: 
      */
-    refresh = refresh || localStorage.getItem('refresh');
-    if (!refresh) return {
-        ok: false,
-        message: "没有登录！"
+    const refresh = localStorage.getItem('refresh');
+    if (!refresh) {
+        handleCheck(false, "没有登录！");
+        return;
     }
 
     fetch(URL + "auth/token/refresh/", {
@@ -114,44 +122,34 @@ function refreshToken(refresh) {
             "content-type": "application/json"
         }
     }).then(res => {
-        if (res.status == 400) return {
-            ok: false,
-            message: "请求参数错误！"
-        };
-        if (res.status >= 500) return {
-            ok: false,
-            message: "服务器错误！"
-        };
-        // 401表示此refresh不合法
-        if (res.status != 200) return {
-            ok: false,
-            message: "身份验证已过期，请重新登录！"
-        };
-        res.json();
+        if (res.status == 400) throw new Error("请求参数错误！");
+        if (res.status >= 500) throw new Error("服务器错误！");
+        // 刷新失败
+        if (res.status != 200) throw new Error("身份验证已过期，请重新登录！");
+        return res.json();
     }).then(data => {
         // 成功刷新Token
         localStorage.setItem('access', data['access']);
+        handleCheck(true);
     }).catch(err => {
         // 其他错误
-        message.error(err.toString());
+        message.error(err.message);
+        handleCheck(false, err.message);
         console.log(err);
     });
-    return {
-        ok: true
-    }
 }
 
-export function checkToken(access) {
+export function checkToken(handleCheck) {
     /**
      * @description: 检查Token合法性，如果不合法尝试刷新Token
      * @param {type} 
      * @return: 
      */
-    access = access || localStorage.getItem('access');
+    const access = localStorage.getItem('access');
 
-    if (!access) return {
-        ok: false,
-        message: "没有登录！"
+    if (!access) {
+        handleCheck(false, "没有登录！");
+        return;
     };
 
     fetch(URL + "auth/token/verify/", {
@@ -163,37 +161,19 @@ export function checkToken(access) {
             "content-type": "application/json"
         }
     }).then(res => {
-        if (res.status == 400) return {
-            ok: false,
-            message: "请求参数错误！"
-        };
-        if (res.status >= 500) return {
-            ok: false,
-            message: "服务器错误！"
-        };
-        // 401表示此refresh不合法
+        if (res.status == 400) throw new Error("请求参数错误！");
+        if (res.status >= 500) throw new Error("服务器错误！");
+        // Token不合法时尝试刷新
         if (res.status != 200) {
-            let { ok, message } = refreshToken();
-            // 刷新失败
-            if (!ok) return {
-                ok: false,
-                message: message
-            };
-            // 刷新成功
-            return {
-                ok: true
-            };
+            refreshToken(handleCheck);
+            return;
         }
-        res.json();
-    }).then(data => {
-        // 此token合法
-        console.log(data)
-        return {
-            ok: true
-        }
+        // 此Token合法
+        handleCheck(true);
     }).catch(err => {
         // 其他错误
-        message.error(err.toString());
+        message.error(err.message);
+        handleCheck(false, err.message);
         console.log(err);
     });
 }

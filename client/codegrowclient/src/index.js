@@ -9,6 +9,7 @@ import './index.css'
 import App from './App';
 import Login from './Login/Login'
 
+// 如果Token没有保存则先设置为空
 (function () {
     const access = localStorage.getItem('access');
     const refresh = localStorage.getItem('refresh');
@@ -30,7 +31,12 @@ class Index extends React.Component {
 
     buttonClick = e => {
         // 如果已经登录，则跳转到主页
-        if (this.state.isLogin) this.props.history.push("/main/");
+        if (this.state.isLogin) this.props.history.push({
+            pathname: "/main/",
+            state: {
+                isLogin: true
+            }
+        });
         // 否则弹出登录窗口
         this.setState({ visible: true });
     }
@@ -70,7 +76,6 @@ ReactDOM.render(
     <Router>
         <Route exact path="/" component={Index} />
         <Route path="/main/" component={App} />
-        <Route path="/login/" component={Login} />
     </Router>,
     document.getElementById('root')
 );
