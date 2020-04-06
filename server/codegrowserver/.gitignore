@@ -1,2 +1,5 @@
 .vscode/
 migrations/
+data/
+migrate.py
+status/
