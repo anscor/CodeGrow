@@ -83,7 +83,10 @@ class UserMutation(DjangoSerializerMutation):
             return cls.perform_mutate(user, info)
 
         profile_data["user"] = user.id
-        if info.context.user and info.context.user.is_staff:
+        if info.context.user and (
+            info.context.user.is_staff
+            or info.context.user.groups.all().filter(name="教师").first()
+        ):
             profile_data["creator"] = info.context.user.id
         profile_ser = UserProfileSerializer(data=profile_data)
         ok, profile = cls.save(profile_ser, root, info)
@@ -104,21 +107,27 @@ class UserMutation(DjangoSerializerMutation):
         data = kwargs.get("input")
         profile_data = data.pop("profile", None)
 
+        # 只有教师与管理员才可以修改其他用户的信息
+        # 否则就算是传入了id也只能修改自己的信息
         pk = data.pop("id")
-        user = get_Object_or_None(User, pk=pk)
-        if not user:
-            return cls.get_errors(
-                [
-                    ErrorType(
-                        field="id",
-                        messages=[
-                            "A {} obj with id: {} do not exist".format(
-                                "User", pk
-                            )
-                        ],
-                    )
-                ]
-            )
+        user = info.context.user
+        if user.is_staff or user.groups.all().filter(name="教师").first():
+            user = get_Object_or_None(User, pk=pk)
+            if not user:
+                return cls.get_errors(
+                    [
+                        ErrorType(
+                            field="id",
+                            messages=[
+                                "A {} obj with id: {} do not exist".format(
+                                    "User", pk
+                                )
+                            ],
+                        )
+                    ]
+                )
+            if profile_data:
+                profile_data["updater"] = user.id
 
         user_ser = UserSerializer(instance=user, data=data, partial=True)
         if not user_ser.is_valid():
@@ -158,15 +167,13 @@ class GroupMutation(DjangoSerializerMutation):
     @classmethod
     def create(cls, root, info, **kwargs):
         data = kwargs.get("input")
-        profile_data = data.pop("profile", None)
+        profile_data = data.pop("profile", {})
+        profile_data["creator"] = info.context.user.id
 
         group_ser = GroupSerializer(data=data)
         ok, group = cls.save(group_ser, root, info)
         if not ok():
             return cls.get_errors(group)
-
-        if not profile_data:
-            return cls.perform_mutate(group)
 
         profile_data["group"] = group.id
         profile_ser = GroupProfileSerializer(data=profile_data)
@@ -180,7 +187,8 @@ class GroupMutation(DjangoSerializerMutation):
     @classmethod
     def update(cls, root, info, **kwargs):
         data = kwargs.pop("input")
-        profile_data = data.pop("profile", None)
+        profile_data = data.pop("profile", {})
+        profile_data["updater"] = info.context.user.id
 
         pk = data.pop("id")
         group = get_Object_or_None(Group, pk=pk)
@@ -205,10 +213,6 @@ class GroupMutation(DjangoSerializerMutation):
                 for key, value in group_ser.errors.items()
             ]
             return cls.get_errors(errors)
-
-        if not profile_data:
-            group = group_ser.save()
-            return cls.perform_mutate(group)
 
         profile = GroupProfile.objects.filter(group_id=group.id)
         profile_ser = GroupProfileSerializer(
