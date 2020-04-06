@@ -45,6 +45,9 @@ INSTALLED_APPS = [
     "users.apps.UsersConfig",
 ]
 
+
+AUTHENTICATION_BACKENDS = ["users.authentications.UserModelBackend"]
+
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
@@ -104,6 +107,10 @@ DATABASES = {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
     }
+    # "default": {
+    #     "ENGINE": "django.db.backends.mysql",
+    #     "OPTIONS": {"read_default_file": "conf/database.cnf",}
+    # }
 }
 
 

@@ -2,7 +2,7 @@
  * @Author: Anscor
  * @Date: 2020-04-02 21:01:41
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-05 19:22:09
+ * @LastEditTime: 2020-04-06 10:34:21
  * @Description: 登录、注册相关页面
  */
 import React, { Component } from 'react';
@@ -68,10 +68,10 @@ export default class Login extends Component {
                 initialValues={{ remember: true }}>
                 <Form.Item
                     name="username"
-                    rules={[{ required: true, message: "请输入用户名！" }]}>
+                    rules={[{ required: true, message: "请输入用户名/邮箱/电话/学工号！" }]}>
                     <Input
                         prefix={<UserOutlined className="site-form-item-icon" />}
-                        placeholder="用户名" />
+                        placeholder="用户名/邮箱/电话/学工号" />
                 </Form.Item>
                 <Form.Item
                     name="password"

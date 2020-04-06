@@ -172,17 +172,17 @@ class GroupMutation(DjangoSerializerMutation):
 
         group_ser = GroupSerializer(data=data)
         ok, group = cls.save(group_ser, root, info)
-        if not ok():
+        if not ok:
             return cls.get_errors(group)
 
         profile_data["group"] = group.id
         profile_ser = GroupProfileSerializer(data=profile_data)
-        ok, profile = cls.save(profil_ser, root, info)
+        ok, profile = cls.save(profile_ser, root, info)
         if not ok:
             group.delete()
             return cls.get_errors(profile)
 
-        return cls.perform_mutate(group)
+        return cls.perform_mutate(group, info)
 
     @classmethod
     def update(cls, root, info, **kwargs):
@@ -225,7 +225,7 @@ class GroupMutation(DjangoSerializerMutation):
         group = group_ser.save()
         profile_ser.save()
 
-        return cls.perform_mutate(group)
+        return cls.perform_mutate(group, info)
 
 
 class Mutation(graphene.ObjectType):

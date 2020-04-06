@@ -40,6 +40,9 @@ class UserProfile(models.Model):
     avatar = models.CharField(
         max_length=64, blank=True, null=True, verbose_name="头像"
     )
+    phone = models.CharField(
+        max_length=11, null=True, blank=True, verbose_name="电话"
+    )
 
     create_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
     update_time = models.DateTimeField(auto_now=True, verbose_name="更新时间")
