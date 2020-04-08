@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     # 用于从status表中导出数据，最终运行时删除
     "status.apps.StatusConfig",
     "problems.apps.ProblemsConfig",
+    "codes.apps.CodesConfig",
 ]
 
 
