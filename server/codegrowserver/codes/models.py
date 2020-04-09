@@ -36,3 +36,30 @@ class Submission(models.Model):
         verbose_name = "提交"
         verbose_name_plural = verbose_name
         db_table = "submission"
+
+
+class CodeTextLineCmp(models.Model):
+    order = models.PositiveIntegerField(verbose_name="序号", default=0)
+    old_line_number = models.PositiveIntegerField(
+        verbose_name="原代码行号", null=True, blank=True
+    )
+    old_line = models.TextField(verbose_name="原代码行", null=True, blank=True)
+    # 单个字母表示，b表示为空，a表示增加，d表示删除，c表示不变
+    old_symbol = models.CharField(
+        max_length=1, verbose_name="原代码记号", default="b"
+    )
+
+    new_line_number = models.PositiveIntegerField(
+        verbose_name="新代码行号", null=True, blank=True
+    )
+    new_line = models.TextField(verbose_name="新代码行", null=True, blank=True)
+    # 单个字母表示，b表示为空，a表示增加，d表示删除，c表示不变
+    new_symbol = models.CharField(
+        max_length=1, verbose_name="新代码记号", default="b"
+    )
+
+    class Meta:
+        verbose_name = "代码纯文本行对比"
+        verbose_name_plural = verbose_name
+        db_table = "code_text_line_cmp"
+        managed = False
