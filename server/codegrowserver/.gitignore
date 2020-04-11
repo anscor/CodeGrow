@@ -1,1 +1,5 @@
-/.vscode
+.vscode/
+migrations/
+data/
+migrate.py
+status/

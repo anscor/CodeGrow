@@ -4,3 +4,4 @@ djangorestframework==3.11.0
 graphene-django==2.9.0
 graphene-django-extras==0.4.8
 django-cors-headers==3.2.1
+mysqlclient==1.4.6

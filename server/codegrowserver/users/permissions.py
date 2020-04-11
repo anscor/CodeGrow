@@ -8,9 +8,16 @@
 @Description: 自定义权限
 """
 from graphene_django.types import ErrorType
-from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
+from rest_framework.permissions import (
+    IsAdminUser,
+    IsAuthenticated,
+    AllowAny,
+    BasePermission,
+)
 from graphene_django_extras.mutation import DjangoSerializerMutation
 from functools import update_wrapper
+from django.contrib.auth.models import Group, AnonymousUser
+from graphene_django_extras.utils import get_Object_or_None
 
 
 def _check_permissions(info, permissions):
@@ -88,3 +95,19 @@ def class_permission(permissions):
         return cls
 
     return decorator
+
+
+class IsTeacherOrAdminUser(BasePermission):
+    def has_permission(self, request, view):
+        if not request.user:
+            return False
+        if isinstance(request.user, AnonymousUser):
+            return False
+        if request.user.is_staff:
+            return True
+        group = get_Object_or_None(Group, name="教师")
+        if not group:
+            return False
+        if group in request.user.groups.all():
+            return True
+        return False

@@ -43,7 +43,14 @@ INSTALLED_APPS = [
     # 跨域问题
     "corsheaders",
     "users.apps.UsersConfig",
+    # 用于从status表中导出数据，最终运行时删除
+    "status.apps.StatusConfig",
+    "problems.apps.ProblemsConfig",
+    "codes.apps.CodesConfig",
 ]
+
+
+AUTHENTICATION_BACKENDS = ["users.authentications.UserModelBackend"]
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -104,6 +111,10 @@ DATABASES = {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
     }
+    # "default": {
+    #     "ENGINE": "django.db.backends.mysql",
+    #     "OPTIONS": {"read_default_file": "conf/database.cnf",}
+    # }
 }
 
 
@@ -129,7 +140,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
-LANGUAGE_CODE = "zh-cn"
+LANGUAGE_CODE = "zh-hans"
 
 TIME_ZONE = "Asia/Shanghai"
 
@@ -137,7 +148,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)

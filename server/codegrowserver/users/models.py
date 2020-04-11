@@ -26,16 +26,22 @@ class UserProfile(models.Model):
         verbose_name="更新者id",
     )
 
-    SEX_CHOICES = ((False, "女"), (True, "男"))
+    SEX_CHOICES = ((0, "女"), (1, "男"), (2, "未知"))
 
     age = models.PositiveIntegerField(blank=True, null=True, verbose_name="年龄")
     name = models.CharField(max_length=64, verbose_name="姓名")
-    student_id = models.PositiveIntegerField(verbose_name="学号", default=0)
-    sex = models.BooleanField(
-        choices=SEX_CHOICES, verbose_name="性别", default=True
+    student_number = models.PositiveIntegerField(verbose_name="学工号", default=0)
+    sex = models.SmallIntegerField(
+        verbose_name="性别", default=2, choices=SEX_CHOICES
     )
     alias = models.CharField(
         max_length=64, blank=True, null=True, verbose_name="昵称"
+    )
+    avatar = models.CharField(
+        max_length=64, blank=True, null=True, verbose_name="头像"
+    )
+    phone = models.CharField(
+        max_length=11, null=True, blank=True, verbose_name="电话"
     )
 
     create_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
