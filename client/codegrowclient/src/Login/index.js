@@ -2,7 +2,7 @@
  * @Author: Anscor
  * @Date: 2020-04-02 21:01:41
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-06 10:34:21
+ * @LastEditTime: 2020-04-11 14:06:20
  * @Description: 登录、注册相关页面
  */
 import React, { Component } from 'react';
@@ -10,7 +10,7 @@ import { Button, Input, Form, Checkbox, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import { URL } from '../App'
 
-import './Login.css'
+import './index.css'
 
 export default class Login extends Component {
 
@@ -30,7 +30,7 @@ export default class Login extends Component {
                 'content-type': 'application/json'
             }
         }).then(res => {
-            if (res.status != 200) {
+            if (res.status !== 200) {
                 this.setState({ loading: false });
                 throw new Error("登录失败！");
             }
@@ -85,7 +85,7 @@ export default class Login extends Component {
                     <Form.Item name="remember" valuePropName="checked" noStyle>
                         <Checkbox checked>记住我</Checkbox>
                     </Form.Item>
-                    <a className="login-form-forgot" href="#">忘记密码？</a>
+                    <a className="login-form-forgot" href="javascript;">忘记密码？</a>
                 </Form.Item>
                 <Form.Item>
                     <Button type="primary" htmlType="submit"
@@ -122,10 +122,10 @@ function refreshToken(handleCheck) {
             "content-type": "application/json"
         }
     }).then(res => {
-        if (res.status == 400) throw new Error("请求参数错误！");
+        if (res.status === 400) throw new Error("请求参数错误！");
         if (res.status >= 500) throw new Error("服务器错误！");
         // 刷新失败
-        if (res.status != 200) throw new Error("身份验证已过期，请重新登录！");
+        if (res.status !== 200) throw new Error("身份验证已过期，请重新登录！");
         return res.json();
     }).then(data => {
         // 成功刷新Token
@@ -161,10 +161,10 @@ export function checkToken(handleCheck) {
             "content-type": "application/json"
         }
     }).then(res => {
-        if (res.status == 400) throw new Error("请求参数错误！");
+        if (res.status === 400) throw new Error("请求参数错误！");
         if (res.status >= 500) throw new Error("服务器错误！");
         // Token不合法时尝试刷新
-        if (res.status != 200) {
+        if (res.status !== 200) {
             refreshToken(handleCheck);
             return;
         }
