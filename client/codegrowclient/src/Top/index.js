@@ -2,16 +2,15 @@
  * @Author: Anscor
  * @Date: 2020-04-11 16:06:22
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-11 22:35:46
+ * @LastEditTime: 2020-04-12 17:43:58
  * @Description: 公共模块
  */
 import { put, call } from 'redux-saga/effects'
-import { message } from 'antd';
 
 import { URL } from '../App'
-import * as Actions from '../redux/actionts'
+import * as Actions from '../redux/actions'
 
-const fetchData = (url, method, args) => {
+export const fetchData = (url, method, args) => {
     return fetch(url, {
         method: method,
         body: JSON.stringify(args),
@@ -28,12 +27,13 @@ const fetchData = (url, method, args) => {
     });
 }
 
-const fetchApi = (query, auth) => {
+export const fetchApi = (query, auth, token) => {
     let headers = new Headers({
         "content-type": "application/json"
     });
+    token = token || localStorage.getItem("access");
     if (auth)
-        headers.append("Authorization", "Bearer " + localStorage.getItem("access"));
+        headers.append("Authorization", "Bearer " + token);
     return fetch(URL + "api/", {
         method: "POST",
         body: JSON.stringify({ query: query }),
@@ -54,7 +54,7 @@ const fetchApi = (query, auth) => {
 
 export function* defaultError(type, err) {
     yield put({ type: type });
-    yield put({ type: Actions.TOP_MESSAGE, message, err });
+    yield put({ type: Actions.TOP_MESSAGE, message: err });
 }
 
 function* refreshToken() {
@@ -72,7 +72,7 @@ function* refreshToken() {
                 res.json().then(data => {
                     localStorage.setItem("access", data["access"]);
                 });
-                yield put({ type: Actions.TOP_LOGIN });
+                yield call(fetchUser);
             }
         } else yield call(defaultError, Actions.TOP_NOT_LOGIN, err);
     }
@@ -89,12 +89,12 @@ export function* verifyToken() {
             if (res.status !== 200) {
                 yield call(refreshToken);
             } else
-                yield put({ type: Actions.TOP_LOGIN, res });
+                yield call(fetchUser);
         } else yield call(defaultError, Actions.TOP_NOT_LOGIN, err);
     }
 }
 
-export function* fetchUser() {
+export function* fetchUser(token) {
     const { data, err } = yield call(fetchApi, `{
         user {
             id
@@ -112,8 +112,12 @@ export function* fetchUser() {
             updateTime
             }
         }
-    }`)
-    if (data) yield put({ type: Actions.TOP_FETCH_USER_SUCCESS, user: data.data.user });
+    }`, true, token);
+    if (data) {
+        if (data.data.user)
+            yield put({ type: Actions.TOP_LOGIN, user: data.data.user });
+        else yield call(defaultError, Actions.TOP_NOT_LOGIN, "没有登录！");
+    }
     else yield put({ type: Actions.TOP_MESSAGE, message: err });
 }
 
@@ -133,6 +137,9 @@ export function* fetchProblems() {
             }
         }
     }`);
-    if (data) yield put({ type: Actions.TOP_FETCH_PROBLEMS_SUCCESS, problems: data });
+    if (data) yield put({
+        type: Actions.TOP_FETCH_PROBLEMS_SUCCESS,
+        problems: data.data.problemSets
+    });
     else yield put({ type: Actions.TOP_MESSAGE, message: err });
 }

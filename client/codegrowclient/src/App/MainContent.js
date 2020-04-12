@@ -2,12 +2,12 @@
  * @Author: Anscor
  * @Date: 2020-04-10 16:40:15
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-10 16:54:26
+ * @LastEditTime: 2020-04-12 18:12:47
  * @Description: Main Content
  */
 
 import React from 'react'
-import { Layout, Breadcrumb, Skeleton } from 'antd'
+import { Layout, Breadcrumb } from 'antd'
 import { Route, useRouteMatch } from 'react-router-dom'
 
 import Home from '../Home'
@@ -21,14 +21,12 @@ export default props => {
                 <Breadcrumb.Item></Breadcrumb.Item>
             </Breadcrumb>
             <div className="site-layout-background" style={{ padding: 24, minHeight: 380 }}>
-                <Skeleton loading={!props.loading} active>
-                    <Route exact path={`${match.path}/`}>
-                        <Home />
-                    </Route>
-                    <Route path={`${match.path}/about/`}>
-                        <About />
-                    </Route>
-                </Skeleton>
+                <Route exact path={`${match.path}/`}>
+                    <Home />
+                </Route>
+                <Route path={`${match.path}/about/`}>
+                    <About />
+                </Route>
             </div>
         </Layout.Content>
     );

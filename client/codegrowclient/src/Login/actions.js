@@ -2,8 +2,12 @@
  * @Author: Anscor
  * @Date: 2020-04-09 20:27:11
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-09 20:27:54
+ * @LastEditTime: 2020-04-12 19:34:46
  * @Description: Login Action类型
  */
 
-export const LOGIN_ = "LOGIN_";
+export const LOGIN_LOGIN = "LOGIN_LOGIN";
+export const LOGIN_LOGIN_FAILED = "LOGIN_LOGIN_FAILED";
+export const LOGIN_LOGOUT = "LOGIN_LOGOUT";
+
+
