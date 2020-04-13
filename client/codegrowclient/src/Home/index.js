@@ -2,15 +2,16 @@
  * @Author: Anscor
  * @Date: 2020-04-10 16:46:56
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-12 22:00:03
+ * @LastEditTime: 2020-04-13 21:51:23
  * @Description: Home
  */
 import React from 'react'
-import { Skeleton, Table, Button } from 'antd';
+import { Table } from 'antd';
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom';
 
 import * as Actions from '../redux/actions'
+import { toLocalDate } from '../Top'
 
 const setColumns = [
     { title: "题目集ID", dataIndex: "id", key: "id" },
@@ -18,19 +19,6 @@ const setColumns = [
     { title: "题目集描述", dataIndex: "description", key: "description" },
     { title: "创建时间", dataIndex: "create_time", key: "create_time" },
 ]
-
-const toLocalDate = date => {
-    date = new Date(date);
-    return date.toLocaleString('zh', {
-        hour12: false,
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-    });
-}
 
 const HomeUI = props => {
     const problemColumns = [
@@ -42,47 +30,51 @@ const HomeUI = props => {
         {
             title: "", dataIndex: "submissions",
             key: "submissions",
-            render: () => (<Button
-                type="link"
-                disabled={props.disabled}
-                onClick={props.onClick}>
-                <Link to="/submissions">
+            render: (text, record) => {
+                return (<Link
+                    to={{
+                        pathname: "/submission/",
+                        state: {
+                            id: record.id
+                        }
+                    }}
+                    disabled={props.disabled}>
                     我的提交
-            </Link>
-            </Button>)
+            </Link>);
+            }
         },
-    ]
+    ];
+    const data = props.problems ? props.problems.map(problemSet => ({
+        key: problemSet.id,
+        id: problemSet.id,
+        name: problemSet.name,
+        description: problemSet.description,
+        create_time: toLocalDate(problemSet.createTime)
+    })) : [];
+    const problemRender = record => (
+        <Table
+            columns={problemColumns}
+            pagination={false}
+            style={{ marginBottom: "30px" }}
+            dataSource={props.problems.find(problem =>
+                problem.id == record.id).problems.map(problem => ({
+                    key: problem.id,
+                    id: problem.id,
+                    name: problem.name,
+                    label: problem.label,
+                    description: problem.description,
+                    create_time: toLocalDate(problem.createTime)
+                }))} />
+    );
     return (
-        <Skeleton active loading={props.problems === undefined} >
-            <Table
-                columns={setColumns}
-                pagination={false}
-                dataSource={props.problems.map(problemSet => ({
-                    key: problemSet.id,
-                    id: problemSet.id,
-                    name: problemSet.name,
-                    description: problemSet.description,
-                    create_time: toLocalDate(problemSet.createTime)
-                }))}
-                expandable={{
-                    expandedRowRender: record => {
-                        return (
-                            <Table
-                                columns={problemColumns}
-                                pagination={false}
-                                style={{ marginBottom: "30px" }}
-                                dataSource={props.problems.find(problem => problem.id == record.id).problems.map(problem => ({
-                                    key: problem.id,
-                                    id: problem.id,
-                                    name: problem.name,
-                                    label: problem.label,
-                                    description: problem.description,
-                                    create_time: toLocalDate(problem.createTime)
-                                }))} />
-                        )
-                    }
-                }} />
-        </Skeleton>
+        <Table
+            columns={setColumns}
+            pagination={false}
+            dataSource={data}
+            loading={!props.problems}
+            expandable={{
+                expandedRowRender: problemRender
+            }} />
     );
 };
 
@@ -101,7 +93,3 @@ export default connect(
     mapStateToProps,
     mapDispatchToProps
 )(HomeUI);
-
-// export default props => (
-//     <p style={{ height: "100vh" }}></p>
-// );

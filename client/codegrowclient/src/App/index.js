@@ -12,10 +12,15 @@ import "./index.css"
 export const URL = "http://127.0.0.1:8000/";
 
 const AppUI = props => {
-    useEffect(props.initialRequest);
+    useEffect(() => {
+        if (props.isLogin) return;
+        props.initialRequest();
+    });
     return (
         <Layout className='layout'>
-            <MainHeader />
+            <MainHeader
+                mainMenuClick={props.mainMenuClick}
+                userMenuClick={props.userMenuClick} />
             <MainContent />
             <Modal
                 title="登录"
@@ -31,19 +36,26 @@ const AppUI = props => {
             </Layout.Footer>
         </Layout>
     );
-}
+};
 
 const mapStateToProps = state => {
     return {
         visible: state.top.isLogin === false,
+        isLogin: state.top.isLogin
     };
-}
+};
 
 const mapDispatchToProps = dispatch => ({
     initialRequest: () => {
         dispatch({ type: Actions.APP_INITIAL_REQUEST });
+    },
+    mainMenuClick: e => {
+        dispatch({ type: Actions.APP_MAIN_MENU_CLICK, key: e.key });
+    },
+    userMenuClick: e => {
+        dispatch({ type: Actions.APP_USER_MENU_CLICK, key: e.key });
     }
-})
+});
 
 export default connect(
     mapStateToProps,

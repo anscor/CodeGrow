@@ -2,7 +2,7 @@
  * @Author: Anscor
  * @Date: 2020-04-11 16:06:22
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-12 17:43:58
+ * @LastEditTime: 2020-04-13 21:51:02
  * @Description: 公共模块
  */
 import { put, call } from 'redux-saga/effects'
@@ -51,6 +51,19 @@ export const fetchApi = (query, auth, token) => {
         return { undefined, err };
     });
 }
+
+export const toLocalDate = date => {
+    date = new Date(date);
+    return date.toLocaleString('zh', {
+        hour12: false,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    });
+};
 
 export function* defaultError(type, err) {
     yield put({ type: type });

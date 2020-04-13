@@ -2,14 +2,14 @@
  * @Author: Anscor
  * @Date: 2020-04-12 16:28:58
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-12 19:45:48
+ * @LastEditTime: 2020-04-13 17:08:59
  * @Description: 登录模块saga
  */
 
-import * as Actions from '../redux/actions'
-import { take, call, put } from 'redux-saga/effects'
+import { take, call } from 'redux-saga/effects'
 
 import { fetchData, fetchUser, defaultError } from '../Top'
+import * as Actions from '../redux/actions'
 import { URL } from '../App'
 
 function* login(data) {
