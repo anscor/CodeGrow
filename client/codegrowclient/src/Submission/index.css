@@ -19,3 +19,14 @@
     padding: 0.5em;
     overflow: auto;
 }
+
+.code-cmp-box {
+    height: 600px;
+    display: flex;
+}
+
+.code-cmp-pre,
+.code-cmp-now {
+    width: 50%;
+    overflow: auto;
+}

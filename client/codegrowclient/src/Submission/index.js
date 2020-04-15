@@ -2,7 +2,7 @@
  * @Author: Anscor
  * @Date: 2020-04-13 17:56:45
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-14 18:41:50
+ * @LastEditTime: 2020-04-15 11:23:38
  * @Description: 提交界面
  */
 import React, { useEffect } from "react"
@@ -15,6 +15,7 @@ import { toLocalDate } from "../Top";
 import CodeDetail from "./CodeDetail";
 
 import './index.css'
+import CodeTextCmp from "./CodeTextCmp";
 
 const tableColumns = props => [
     { title: "提交ID", dataIndex: "id", key: "id" },
@@ -51,7 +52,11 @@ const tableColumns = props => [
         title: "",
         dataIndex: "pre",
         key: "pre",
-        render: () => (<Button
+        render: (text, record) => (<Button
+            onClick={() => {
+                props.textCmpClick(props.submissions.find(submission =>
+                    submission.id === record.id).id);
+            }}
             type="link">
             与上一版本对比
         </Button>)
@@ -90,6 +95,16 @@ const SubmissionUI = props => {
                 visible={props.detailVisible}>
                 <CodeDetail submission={props.submission} />
             </Modal>
+            <Modal
+                onCancel={props.textCmpClose}
+                visible={props.textCmpVisible}
+                title="与上一版本对比"
+                width={1300}
+                centered
+                footer={false}
+                maskClosable={true}>
+                <CodeTextCmp cmps={props.cmps} />
+            </Modal>
         </div>
     );
 }
@@ -97,7 +112,9 @@ const SubmissionUI = props => {
 const mapStateToProps = state => ({
     submissions: state.submission.submissions,
     detailVisible: state.submission.detailVisible,
-    submission: state.submission.submission
+    submission: state.submission.submission,
+    textCmpVisible: state.submission.textCmpVisible,
+    cmps: state.submission.cmps
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -116,6 +133,15 @@ const mapDispatchToProps = dispatch => ({
         dispatch({
             type: Actions.SUBMISSION_DETAIL_CLICK,
             submission: submission
+        });
+    },
+    textCmpClose: () => {
+        dispatch({ type: Actions.SUBMISSION_TEXT_CMP_MODAL_CLOSE });
+    },
+    textCmpClick: id => {
+        dispatch({
+            type: Actions.SUBMISSION_TEXT_CMP_CLICK,
+            id: id
         });
     }
 });

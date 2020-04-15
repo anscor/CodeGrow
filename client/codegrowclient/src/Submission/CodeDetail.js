@@ -2,7 +2,7 @@
  * @Author: Anscor
  * @Date: 2020-04-14 12:49:10
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-14 19:13:04
+ * @LastEditTime: 2020-04-15 11:51:10
  * @Description: 代码详情
  */
 
@@ -31,6 +31,7 @@ export default props => {
                 <SyntaxHighlighter
                     style={githubGist}
                     showLineNumbers
+                    lineNumberProps={{ style: { color: "rgba(27,31,35,.3)" } }}
                     language="cpp">
                     {props.submission.code}
                 </SyntaxHighlighter>
