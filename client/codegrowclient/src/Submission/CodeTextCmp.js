@@ -2,7 +2,7 @@
  * @Author: Anscor
  * @Date: 2020-04-14 19:15:01
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-15 11:45:57
+ * @LastEditTime: 2020-04-15 11:53:56
  * @Description: 代码纯文本对比
  */
 
@@ -77,7 +77,6 @@ const codeColor = (codes, line, kind) => {
 };
 
 export default props => {
-    const t = "return 0";
     return (
         <Skeleton loading={props.cmps === undefined}>
             <div className="code-cmp-box">

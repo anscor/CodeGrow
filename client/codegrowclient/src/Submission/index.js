@@ -2,7 +2,7 @@
  * @Author: Anscor
  * @Date: 2020-04-13 17:56:45
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-15 11:23:38
+ * @LastEditTime: 2020-04-15 11:53:27
  * @Description: 提交界面
  */
 import React, { useEffect } from "react"
@@ -39,7 +39,7 @@ const tableColumns = props => [
         title: "代码详情",
         dataIndex: "code",
         key: "code",
-        render: (text, record) => (<Button
+        render: (_, record) => (<Button
             type="link"
             onClick={() => {
                 props.detailClick(props.submissions.find(submission =>
@@ -52,7 +52,7 @@ const tableColumns = props => [
         title: "",
         dataIndex: "pre",
         key: "pre",
-        render: (text, record) => (<Button
+        render: (_, record) => (<Button
             onClick={() => {
                 props.textCmpClick(props.submissions.find(submission =>
                     submission.id === record.id).id);

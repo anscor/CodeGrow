@@ -2,7 +2,7 @@
  * @Author: Anscor
  * @Date: 2020-04-10 16:40:15
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-13 21:31:02
+ * @LastEditTime: 2020-04-15 11:55:02
  * @Description: Main Content
  */
 
@@ -14,7 +14,7 @@ import Home from '../Home'
 import About from '../About'
 import Submission from '../Submission'
 
-export default props => {
+export default () => {
     return (
         <Layout.Content className="site-layout" style={{ padding: '0 50px', marginTop: 64, height: '100%' }}>
             <Breadcrumb style={{ margin: '16px 0' }}>

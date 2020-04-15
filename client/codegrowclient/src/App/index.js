@@ -15,7 +15,7 @@ const AppUI = props => {
     useEffect(() => {
         if (props.isLogin) return;
         props.initialRequest();
-    });
+    }, [props]);
     return (
         <Layout className='layout'>
             <MainHeader
