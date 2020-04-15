@@ -2,7 +2,7 @@
  * @Author: Anscor
  * @Date: 2020-04-13 17:07:52
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-13 17:46:49
+ * @LastEditTime: 2020-04-15 12:21:45
  * @Description: App saga
  */
 import { put, call, take, all } from 'redux-saga/effects'
@@ -10,9 +10,11 @@ import { put, call, take, all } from 'redux-saga/effects'
 import * as Actions from '../redux/actions'
 
 const doUserMenuClick = key => {
-    console.log(key);
     switch (key) {
         case "logout":
+            localStorage.clear();
+            window.location.href = "/";
+            put({ type: Actions.TOP_INIT_ALL });
             break;
         case "setting":
             break;
