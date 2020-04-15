@@ -2,7 +2,7 @@
  * @Author: Anscor
  * @Date: 2020-04-10 16:23:01
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-10 16:36:21
+ * @LastEditTime: 2020-04-13 17:49:57
  * @Description: Main Header
  */
 
@@ -22,7 +22,7 @@ const HeaderLogo = () => (
 
 const UserMenu = props => (
     <Dropdown overlay={
-        <Menu onClick={props.menuClick}>
+        <Menu onClick={props.userMenuClick}>
             <Menu.Item key="setting">
                 <SettingOutlined />
                 账号设置
@@ -43,17 +43,19 @@ const HeaderMenu = props => (
             theme="dark"
             mode="horizontal"
             defaultSelectedKeys={['home']}
-            onClick={props.menuClick}>
+            onClick={props.mainMenuClick}>
             <Menu.Item key="home">HOME</Menu.Item>
             <Menu.Item key="about">关于</Menu.Item>
-            <UserMenu />
+            <UserMenu userMenuClick={props.userMenuClick} />
         </Menu>
     </div>
 );
 
-export default () => (
+export default props => (
     <Layout.Header style={{ position: 'fixed', zIndex: 1, width: '100%' }}>
         <HeaderLogo />
-        <HeaderMenu />
+        <HeaderMenu
+            mainMenuClick={props.mainMenuClick}
+            userMenuClick={props.userMenuClick} />
     </Layout.Header>
 );

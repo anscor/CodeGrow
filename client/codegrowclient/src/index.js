@@ -10,7 +10,7 @@ import App from './App'
 ReactDOM.render(
     <Provider store={store}>
         <Router history={createBrowserHistory()}>
-            <Route exact path="/" component={App} />
+            <Route path="/" component={App} />
         </Router>
     </Provider>,
     document.getElementById("root")

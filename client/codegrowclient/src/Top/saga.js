@@ -2,14 +2,14 @@
  * @Author: Anscor
  * @Date: 2020-04-11 16:51:19
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-11 22:24:23
+ * @LastEditTime: 2020-04-12 15:56:00
  * @Description: 公共模块saga
  */
 
 import { take, fork, all } from 'redux-saga/effects'
 import { message } from 'antd'
 
-import * as Actions from '../redux/actionts'
+import * as Actions from '../redux/actions'
 import { verifyToken, fetchProblems } from './index'
 
 function* initialRequest() {

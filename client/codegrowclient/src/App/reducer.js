@@ -2,15 +2,14 @@
  * @Author: Anscor
  * @Date: 2020-04-09 21:12:36
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-11 16:10:32
+ * @LastEditTime: 2020-04-12 16:07:37
  * @Description: App Reducer
  */
 
-import * as ActionTypes from "../redux/actionts"
+import * as ActionTypes from "../redux/actions"
 
 export const initialState = {
-    visible: false,
-    client: undefined,
+    visible: false
 };
 
 export default (state = {}, action) => {
@@ -19,8 +18,6 @@ export default (state = {}, action) => {
             return Object.assign({}, state, {
                 visible: false
             });
-        case ActionTypes.APP_INITIAL_REQUEST:
-            return state;
 
         default:
             return state;

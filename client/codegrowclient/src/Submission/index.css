@@ -1,0 +1,32 @@
+.code-detial-box {
+    height: 600px;
+    display: flex;
+    flex-direction: column;
+}
+
+.code-detail {
+    overflow: auto;
+}
+
+.code-compile-error-box {
+    height: 30%;
+    display: flex;
+    flex-direction: column;
+}
+
+.code-compile-error {
+    background-color: #f0f2f5;
+    padding: 0.5em;
+    overflow: auto;
+}
+
+.code-cmp-box {
+    height: 600px;
+    display: flex;
+}
+
+.code-cmp-pre,
+.code-cmp-now {
+    width: 50%;
+    overflow: auto;
+}

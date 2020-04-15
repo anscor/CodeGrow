@@ -26,7 +26,7 @@ class Query(ObjectType):
 
     @wrap_query_permission([IsAuthenticated])
     def resolve_submissions(self, info, **kwargs):
-        ss = Submission.objects.filter(user_id=info.context.user.id)
+        ss = Submission.objects.filter(user_id=info.context.user.id).order_by("-id")
         pid = kwargs.get("problem_id", None)
         if pid:
             ss = ss.filter(problem_id=pid)
