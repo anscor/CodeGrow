@@ -26,14 +26,10 @@ class UserProfile(models.Model):
         verbose_name="更新者id",
     )
 
-    SEX_CHOICES = ((0, "女"), (1, "男"), (2, "未知"))
-
     age = models.PositiveIntegerField(blank=True, null=True, verbose_name="年龄")
     name = models.CharField(max_length=64, verbose_name="姓名")
     student_number = models.PositiveIntegerField(verbose_name="学工号", default=0)
-    sex = models.SmallIntegerField(
-        verbose_name="性别", default=2, choices=SEX_CHOICES
-    )
+    sex = models.CharField(verbose_name="性别", default="未知", max_length=2)
     alias = models.CharField(
         max_length=64, blank=True, null=True, verbose_name="昵称"
     )

@@ -45,7 +45,7 @@ const mapStateToProps = state => {
     };
 };
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch, ownProps) => ({
     initialRequest: () => {
         dispatch({ type: Actions.APP_INITIAL_REQUEST });
     },
@@ -53,7 +53,11 @@ const mapDispatchToProps = dispatch => ({
         dispatch({ type: Actions.APP_MAIN_MENU_CLICK, key: e.key });
     },
     userMenuClick: e => {
-        dispatch({ type: Actions.APP_USER_MENU_CLICK, key: e.key });
+        dispatch({
+            type: Actions.APP_USER_MENU_CLICK,
+            key: e.key,
+            history: ownProps.history
+        });
     }
 });
 

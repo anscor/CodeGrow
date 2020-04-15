@@ -1,0 +1,13 @@
+.setting-box {
+    display: inline;
+}
+
+.setting {
+    width: 60%;
+    margin-left: 60px;
+}
+
+.setting-avatar {
+    width: 40%;
+    height: 100%;
+}

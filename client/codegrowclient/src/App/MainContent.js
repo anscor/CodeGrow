@@ -2,7 +2,7 @@
  * @Author: Anscor
  * @Date: 2020-04-10 16:40:15
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-15 11:55:02
+ * @LastEditTime: 2020-04-15 16:05:53
  * @Description: Main Content
  */
 
@@ -13,6 +13,7 @@ import { Route } from 'react-router-dom'
 import Home from '../Home'
 import About from '../About'
 import Submission from '../Submission'
+import Profile from '../Profile'
 
 export default () => {
     return (
@@ -24,6 +25,7 @@ export default () => {
                 <Route exact path="/" component={Home} />
                 <Route path="/about/" component={About} />
                 <Route path="/submission/" component={Submission} />
+                <Route path="/profile/" component={Profile} />
             </div>
         </Layout.Content>
     );
