@@ -2,7 +2,7 @@
  * @Author: Anscor
  * @Date: 2020-04-10 16:40:15
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-13 21:31:02
+ * @LastEditTime: 2020-04-15 16:05:53
  * @Description: Main Content
  */
 
@@ -13,8 +13,9 @@ import { Route } from 'react-router-dom'
 import Home from '../Home'
 import About from '../About'
 import Submission from '../Submission'
+import Profile from '../Profile'
 
-export default props => {
+export default () => {
     return (
         <Layout.Content className="site-layout" style={{ padding: '0 50px', marginTop: 64, height: '100%' }}>
             <Breadcrumb style={{ margin: '16px 0' }}>
@@ -24,6 +25,7 @@ export default props => {
                 <Route exact path="/" component={Home} />
                 <Route path="/about/" component={About} />
                 <Route path="/submission/" component={Submission} />
+                <Route path="/profile/" component={Profile} />
             </div>
         </Layout.Content>
     );

@@ -2,7 +2,7 @@
  * @Author: Anscor
  * @Date: 2020-04-09 20:08:14
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-13 19:04:50
+ * @LastEditTime: 2020-04-15 15:54:30
  * @Description: Redux Reducer
  */
 import { combineReducers } from 'redux';
@@ -28,12 +28,18 @@ import {
     initialState as SubmissionState
 } from '../Submission/reducer'
 
+import {
+    default as ProfileReducer,
+    initialState as ProfileState
+} from '../Profile/reducer'
+
 export const initialState = {
     top: TopState,
     app: AppState,
     login: LoginState,
     home: HomeState,
-    submission: SubmissionState
+    submission: SubmissionState,
+    profile: ProfileState
 };
 
 export default combineReducers({
@@ -41,5 +47,6 @@ export default combineReducers({
     login: LoginReducer,
     app: AppReducer,
     home: HomeReducer,
-    submission: SubmissionReducer
+    submission: SubmissionReducer,
+    profile: ProfileReducer
 });

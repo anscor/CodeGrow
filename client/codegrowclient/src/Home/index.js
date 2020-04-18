@@ -2,7 +2,7 @@
  * @Author: Anscor
  * @Date: 2020-04-10 16:46:56
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-13 21:51:23
+ * @LastEditTime: 2020-04-15 11:55:44
  * @Description: Home
  */
 import React from 'react'
@@ -30,7 +30,7 @@ const HomeUI = props => {
         {
             title: "", dataIndex: "submissions",
             key: "submissions",
-            render: (text, record) => {
+            render: (_, record) => {
                 return (<Link
                     to={{
                         pathname: "/submission/",
@@ -86,7 +86,7 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = {
-    onClick: e => ({ type: Actions.HOME_MY_SUBMISSIONS_CLICK })
+    onClick: () => ({ type: Actions.HOME_MY_SUBMISSIONS_CLICK })
 }
 
 export default connect(

@@ -2,19 +2,22 @@
  * @Author: Anscor
  * @Date: 2020-04-13 17:07:52
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-13 17:46:49
+ * @LastEditTime: 2020-04-15 16:09:16
  * @Description: App saga
  */
 import { put, call, take, all } from 'redux-saga/effects'
 
 import * as Actions from '../redux/actions'
 
-const doUserMenuClick = key => {
-    console.log(key);
+const doUserMenuClick = (key, history) => {
     switch (key) {
         case "logout":
+            localStorage.clear();
+            window.location.href = "/";
+            put({ type: Actions.TOP_INIT_ALL });
             break;
         case "setting":
+            history.push("/profile/");
             break;
         default:
             break;
@@ -36,7 +39,7 @@ const doMainMenuClick = key => {
 function* userMenu() {
     while (true) {
         const action = yield take(Actions.APP_USER_MENU_CLICK);
-        yield call(doUserMenuClick, action.key);
+        yield call(doUserMenuClick, action.key, action.history);
     }
 }
 

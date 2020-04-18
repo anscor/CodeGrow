@@ -2,7 +2,7 @@
  * @Author: Anscor
  * @Date: 2020-04-13 19:01:38
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-14 21:55:59
+ * @LastEditTime: 2020-04-15 12:12:40
  * @Description: 提交模块reducer
  */
 
@@ -18,6 +18,8 @@ export const initialState = {
 
 export default (state = {}, action) => {
     switch (action.type) {
+        case Actions.TOP_INIT_ALL:
+            return initialState;
         case Actions.SUBMISSION_FETCH_SUBMISSIONS_SUCCESS:
             return Object.assign({}, state, {
                 submissions: action.submissions

@@ -2,7 +2,7 @@
  * @Author: Anscor
  * @Date: 2020-04-12 16:28:58
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-13 17:08:59
+ * @LastEditTime: 2020-04-15 12:23:01
  * @Description: 登录模块saga
  */
 
@@ -33,6 +33,5 @@ export default function* saga() {
     while (true) {
         const action = yield take(Actions.LOGIN_LOGIN);
         yield call(login, action.data);
-        yield take(Actions.LOGIN_LOGOUT);
     }
 }
