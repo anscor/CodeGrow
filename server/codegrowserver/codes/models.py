@@ -12,7 +12,9 @@ class Submission(models.Model):
     )
 
     # 提交代码在OJ上的运行id，用于数据迁移，成品时删除
-    rid = models.IntegerField(verbose_name="运行id", null=True, blank=True)
+    rid = models.CharField(
+        verbose_name="运行id", null=True, blank=True, max_length=64
+    )
 
     code = models.TextField(verbose_name="代码")
     result = models.CharField(verbose_name="结果", max_length=64)
