@@ -2,11 +2,11 @@
  * @Author: Anscor
  * @Date: 2020-04-14 19:15:01
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-15 11:53:56
+ * @LastEditTime: 2020-04-20 17:21:51
  * @Description: 代码纯文本对比
  */
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import SyntaxHighlighter from 'react-syntax-highlighter'
 import { githubGist } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import { Skeleton } from 'antd';
@@ -77,6 +77,14 @@ const codeColor = (codes, line, kind) => {
 };
 
 export default props => {
+    useEffect(() => {
+        const t = document.getElementsByClassName("code_line");
+        let max_width = 0;
+        for (let i = 0; i < t.length; i = i + 1)
+            max_width = max_width > t[i].scrollWidth ? max_width : t[i].scrollWidth;
+        for (let i = 0; i < t.length; i = i + 1)
+            t[i].style.width = max_width + "px";
+    });
     return (
         <Skeleton loading={props.cmps === undefined}>
             <div className="code-cmp-box">
@@ -93,7 +101,7 @@ export default props => {
                                     lineNumber - 1, "old"),
                                 display: "block"
                             };
-                            return { style: style };
+                            return { style: style, class: "code_line" };
                         }}
                         style={githubGist}>
                         {showCode(props.cmps, "old")}
@@ -112,7 +120,7 @@ export default props => {
                                     lineNumber - 1, "new"),
                                 display: "block"
                             };
-                            return { style: style };
+                            return { style: style, className: "code_line" };
                         }}
                         style={githubGist}>
                         {showCode(props.cmps, "new")}
