@@ -2,11 +2,11 @@
  * @Author: Anscor
  * @Date: 2020-04-14 19:15:01
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-15 11:53:56
+ * @LastEditTime: 2020-04-20 20:40:56
  * @Description: 代码纯文本对比
  */
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import SyntaxHighlighter from 'react-syntax-highlighter'
 import { githubGist } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import { Skeleton } from 'antd';
@@ -76,11 +76,41 @@ const codeColor = (codes, line, kind) => {
     else return "white";
 };
 
+const scrollFunc = (one, other, isIn) => {
+    if (!isIn) return;
+    other.scrollTop = one.scrollTop;
+    const ch1 = one.getElementsByTagName("pre")[0].clientWidth;
+    const ch2 = other.getElementsByTagName("pre")[0].clientWidth;
+    const scale = (ch2 - other.clientWidth) / (ch1 - one.clientWidth);
+    other.scrollLeft = one.scrollLeft * scale;
+};
+
 export default props => {
+    useEffect(() => {
+        const pre = document.getElementsByClassName("code-cmp-pre")[0];
+        const now = document.getElementsByClassName("code-cmp-now")[0];
+        let isPre = false, isNow = false;
+        if (!pre || !now) return;
+        pre.addEventListener("mouseenter", () => {
+            isPre = true;
+        });
+        pre.addEventListener("scroll", () => scrollFunc(pre, now, isPre));
+        pre.addEventListener("mouseleave", () => {
+            isPre = false;
+        })
+        now.addEventListener("mouseenter", () => {
+            isNow = true;
+        });
+        now.addEventListener("scroll", () => scrollFunc(now, pre, isNow));
+        now.addEventListener("mouseleave", () => {
+            isNow = false;
+        });
+    });
     return (
         <Skeleton loading={props.cmps === undefined}>
             <div className="code-cmp-box">
-                <div className="code-cmp-pre">
+                <div
+                    className="code-cmp-pre">
                     <SyntaxHighlighter
                         language="cpp"
                         wrapLines={true}
@@ -93,13 +123,14 @@ export default props => {
                                     lineNumber - 1, "old"),
                                 display: "block"
                             };
-                            return { style: style };
+                            return { style: style, className: "code-line" };
                         }}
                         style={githubGist}>
                         {showCode(props.cmps, "old")}
                     </SyntaxHighlighter>
                 </div>
-                <div className="code-cmp-now">
+                <div
+                    className="code-cmp-now">
                     <SyntaxHighlighter
                         language="cpp"
                         wrapLines={true}
@@ -112,7 +143,7 @@ export default props => {
                                     lineNumber - 1, "new"),
                                 display: "block"
                             };
-                            return { style: style };
+                            return { style: style, className: "code-line" };
                         }}
                         style={githubGist}>
                         {showCode(props.cmps, "new")}
