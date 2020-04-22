@@ -10,7 +10,7 @@ import Login from '../Login'
 import "./index.css"
 
 export const URL = process.env.NODE_ENV === "development" ?
-    "http://127.0.0.1:8000/" : "http://anscor-x.top:23333/";
+    "http://127.0.0.1:8000/" : "http://anscor-x.top:8000/";
 
 const AppUI = props => {
     useEffect(() => {
