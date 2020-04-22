@@ -152,6 +152,48 @@ class Query(ObjectType):
             last_old += 1
             last_new += 1
             i += 1
+        
+        while last_old < len(old_lines) and last_new < len(new_lines):
+            cmp_lines.append(
+                CodeTextLineCmp(
+                    order=i,
+                    old_line_number=last_old + 1,
+                    old_line=old_lines[last_old],
+                    old_symbol="d",
+                    new_line_number=last_new + 1,
+                    new_line=new_lines[last_new],
+                    new_symbol="a",
+                )
+            )
+            last_old += 1
+            last_new += 1
+            i += 1
+
+        # 旧代码有，新代码空白
+        while last_old < len(old_lines):
+            cmp_lines.append(
+                CodeTextLineCmp(
+                    order=i,
+                    old_line_number=last_old + 1,
+                    old_line=old_lines[last_old],
+                    old_symbol="d",
+                )
+            )
+            last_old += 1
+            i += 1
+
+        # 新代码有，旧代码空白
+        while last_new < len(new_lines):
+            cmp_lines.append(
+                CodeTextLineCmp(
+                    order=i,
+                    new_line_number=last_new + 1,
+                    new_line=new_lines[last_new],
+                    new_symbol="a",
+                )
+            )
+            last_new += 1
+            i += 1
 
         return cmp_lines
 
@@ -193,6 +235,9 @@ class Query(ObjectType):
                 i -= 1
             # 添加到结果中
             eq_lines.append({"old": i, "new": j})
+            # 匹配长度为1时结束
+            if c[i][j] == 1:
+                break
             # 向左上方走一步
             l -= 1
             i -= 1
