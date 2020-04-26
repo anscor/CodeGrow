@@ -9,6 +9,7 @@
 """
 
 from rest_framework.permissions import IsAuthenticated
+from clang.cindex import Index, Cursor, Config
 
 from codes.models import Submission, CodeTextLineCmp
 from codes.modeltypes import SubmissionType, CodeTextLineCmpType
@@ -17,6 +18,47 @@ from graphene_django.types import ObjectType
 
 import graphene
 
+class SyntaxTree:
+    def __init__(self):
+        self.__parent = None
+        self.__children = []
+        self.__cursor = None
+
+    @classmethod
+    def from_cursor(cls, root: Cursor, filename):
+        assert root is not None and isinstance(root, Cursor)
+        syntax_tree = SyntaxTree()
+        syntax_tree.__cursor = root
+
+        q = Queue()
+        q.put(syntax_tree)
+        while not q.empty():
+            curr_node = q.get()
+            for child in curr_node.cursor.get_children():
+                if child is None:
+                    continue
+                f = child.location.file
+                if not f or f.name != filename:
+                    continue
+                child_node = SyntaxTree()
+                child_node.__cursor = child
+                child_node.__parent = curr_node
+                curr_node.__children.append(child_node)
+                q.put(child_node)
+
+        return syntax_tree
+
+    @property
+    def parent(self):
+        return self.__parent
+
+    @property
+    def children(self):
+        return self.__children
+
+    @property
+    def cursor(self):
+        return self.__cursor
 
 class Query(ObjectType):
     submissions = graphene.List(SubmissionType, problem_id=graphene.Int())
