@@ -2,7 +2,7 @@
  * @Author: Anscor
  * @Date: 2020-04-13 17:56:45
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-15 11:53:27
+ * @LastEditTime: 2020-04-28 16:20:54
  * @Description: 提交界面
  */
 import React, { useEffect } from "react"
@@ -52,14 +52,17 @@ const tableColumns = props => [
         title: "",
         dataIndex: "pre",
         key: "pre",
-        render: (_, record) => (<Button
-            onClick={() => {
-                props.textCmpClick(props.submissions.find(submission =>
-                    submission.id === record.id).id);
-            }}
-            type="link">
-            与上一版本对比
-        </Button>)
+        render: (_, record, index) => {
+            if (index === props.submissions.length - 1) return "";
+            else return (<Button
+                onClick={() => {
+                    props.textCmpClick(props.submissions.find(submission =>
+                        submission.id === record.id).id);
+                }}
+                type="link">
+                与上一版本对比
+            </Button>)
+        }
     }
 ];
 
