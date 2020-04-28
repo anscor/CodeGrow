@@ -2,7 +2,7 @@
  * @Author: Anscor
  * @Date: 2020-04-15 15:46:00
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-15 22:02:18
+ * @LastEditTime: 2020-04-28 16:18:33
  * @Description: 用户账户设置
  */
 import React from 'react'
@@ -16,10 +16,6 @@ import './index.css'
 const formItemLayout = {
     labelCol: { span: 6 },
     wrapperCol: { span: 14, offset: 1 },
-};
-
-const finish = () => {
-
 };
 
 const ProfileUI = props => {

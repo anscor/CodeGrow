@@ -2,7 +2,7 @@
  * @Author: Anscor
  * @Date: 2020-04-14 19:15:01
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-20 20:40:56
+ * @LastEditTime: 2020-04-28 16:16:34
  * @Description: 代码纯文本对比
  */
 
@@ -111,6 +111,7 @@ export default props => {
             <div className="code-cmp-box">
                 <div
                     className="code-cmp-pre">
+                    <p>上一版本</p>
                     <SyntaxHighlighter
                         language="cpp"
                         wrapLines={true}
@@ -131,6 +132,7 @@ export default props => {
                 </div>
                 <div
                     className="code-cmp-now">
+                    <p>当前版本</p>
                     <SyntaxHighlighter
                         language="cpp"
                         wrapLines={true}
