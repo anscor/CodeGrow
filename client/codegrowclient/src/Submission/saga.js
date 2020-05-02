@@ -2,7 +2,7 @@
  * @Author: Anscor
  * @Date: 2020-04-13 19:20:54
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-14 19:34:16
+ * @LastEditTime: 2020-05-01 17:22:50
  * @Description: 提交模块saga
  */
 
@@ -49,7 +49,27 @@ function* fetchCodeTextCmp(id) {
     if (data)
         yield put({
             type: Actions.SUBMISSION_FETCH_TEXT_CMP_SUCCESS,
-            cmps: data.data.codeTextCmp
+            textCmps: data.data.codeTextCmp
+        });
+    else
+        yield put({ type: Actions.TOP_MESSAGE, message: err });
+}
+
+function* fetchCodeSyntaxCmp(id) {
+    const { data, err } = yield call(fetchApi, `{
+        codeSyntaxCmp(submissionId: ${id}) {
+            order
+            oldLineNumber
+            oldLine
+            newLineNumber
+            newLine
+            isSame
+        }
+    }`, true);
+    if (data)
+        yield put({
+            type: Actions.SUBMISSION_FETCH_SYNTAX_CMP_SUCCESS,
+            syntaxCmps: data.data.codeSyntaxCmp
         });
     else
         yield put({ type: Actions.TOP_MESSAGE, message: err });
@@ -68,9 +88,16 @@ function* fetchCodeTextCmpSaga() {
         yield call(fetchCodeTextCmp, action.id);
     }
 }
+function* fetchCodeSyntaxCmpSaga() {
+    while (true) {
+        const action = yield take(Actions.SUBMISSION_SYNTAX_CMP_CLICK);
+        yield call(fetchCodeSyntaxCmp, action.id);
+    }
+}
 
 export default function* saga() {
     yield all([
+        fetchCodeSyntaxCmpSaga(),
         fetchCodeTextCmpSaga(),
         fetchSubmissionSaga()
     ]);

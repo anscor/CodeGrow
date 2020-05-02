@@ -2,7 +2,7 @@
  * @Author: Anscor
  * @Date: 2020-04-13 19:01:38
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-15 12:12:40
+ * @LastEditTime: 2020-05-01 18:59:58
  * @Description: 提交模块reducer
  */
 
@@ -12,8 +12,10 @@ export const initialState = {
     submissions: undefined,
     detailVisible: false,
     textCmpVisible: false,
+    syntaxCmpVisible: false,
     submission: undefined,
-    cmps: undefined,
+    textCmps: undefined,
+    syntaxCmps: undefined
 };
 
 export default (state = {}, action) => {
@@ -35,7 +37,8 @@ export default (state = {}, action) => {
             });
         case Actions.SUBMISSION_TEXT_CMP_CLICK:
             return Object.assign({}, state, {
-                textCmpVisible: true
+                textCmpVisible: true,
+                textCmps: undefined
             });
         case Actions.SUBMISSION_TEXT_CMP_MODAL_CLOSE:
             return Object.assign({}, state, {
@@ -43,7 +46,20 @@ export default (state = {}, action) => {
             });
         case Actions.SUBMISSION_FETCH_TEXT_CMP_SUCCESS:
             return Object.assign({}, state, {
-                cmps: action.cmps
+                textCmps: action.textCmps
+            });
+        case Actions.SUBMISSION_SYNTAX_CMP_CLICK:
+            return Object.assign({}, state, {
+                syntaxCmpVisible: true,
+                syntaxCmps: undefined
+            });
+        case Actions.SUBMISSION_SYNTAX_CMP_MODAL_CLOSE:
+            return Object.assign({}, state, {
+                syntaxCmpVisible: false
+            });
+        case Actions.SUBMISSION_FETCH_SYNTAX_CMP_SUCCESS:
+            return Object.assign({}, state, {
+                syntaxCmps: action.syntaxCmps
             });
         default:
             return state;
