@@ -2,7 +2,7 @@
  * @Author: Anscor
  * @Date: 2020-05-01 17:13:18
  * @LastEditors: Anscor
- * @LastEditTime: 2020-05-01 19:40:05
+ * @LastEditTime: 2020-05-03 09:36:31
  * @Description: 代码语法成分对比
  */
 
@@ -69,7 +69,6 @@ const codeColor = (codes, line) => {
 
 const scrollFunc = (one, other, isIn) => {
     if (!isIn) return;
-    console.log("scroll");
     other.scrollTop = one.scrollTop;
     const ch1 = one.getElementsByTagName("pre")[0].clientWidth;
     const ch2 = other.getElementsByTagName("pre")[0].clientWidth;

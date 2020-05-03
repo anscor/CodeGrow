@@ -10,7 +10,7 @@
 
 from graphene_django import DjangoObjectType
 
-from codes.models import Submission, CodeTextLineCmp
+from codes.models import Submission, CodeTextLineCmp, CodeSyntaxLineCmp
 from problems.modeltypes import ProblemType
 from problems.models import Problem
 
@@ -32,4 +32,10 @@ class SubmissionType(DjangoObjectType):
 class CodeTextLineCmpType(DjangoObjectType):
     class Meta:
         model = CodeTextLineCmp
+        exclude_fields = ["id"]
+
+
+class CodeSyntaxLineCmp(DjangoObjectType):
+    class Meta:
+        model = CodeSyntaxLineCmp
         exclude_fields = ["id"]
