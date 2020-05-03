@@ -65,3 +65,22 @@ class CodeTextLineCmp(models.Model):
         verbose_name_plural = verbose_name
         db_table = "code_text_line_cmp"
         managed = False
+
+
+class CodeSyntaxLineCmp(models.Model):
+    order = models.PositiveIntegerField(verbose_name="序号", default=0)
+    old_line_number = models.PositiveIntegerField(
+        verbose_name="原代码行号", null=True, blank=True
+    )
+    old_line = models.TextField(verbose_name="原代码行", null=True, blank=True)
+    new_line_number = models.PositiveIntegerField(
+        verbose_name="新代码行号", null=True, blank=True
+    )
+    new_line = models.TextField(verbose_name="新代码行", null=True, blank=True)
+    is_same = models.BooleanField(verbose_name="语法成分是否相同", default=False)
+
+    class Meta:
+        managed = False
+        verbose_name = "代码语法行对比"
+        verbose_name_plural = verbose_name
+        db_table = "code_syntax_line_cmp"

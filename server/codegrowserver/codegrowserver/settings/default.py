@@ -29,7 +29,7 @@ SECRET_KEY = "8dnw989#wx*29mm(gzitd9*&j*f3n*@&+&#1t)tz!syb4@qvx7"
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
+LIBCLANG_FILE = "D:/Anscor/LLVM32/bin/libclang.dll"
 
 # Application definition
 

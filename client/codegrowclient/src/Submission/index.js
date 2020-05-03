@@ -2,7 +2,7 @@
  * @Author: Anscor
  * @Date: 2020-04-13 17:56:45
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-28 16:20:54
+ * @LastEditTime: 2020-05-01 17:15:11
  * @Description: 提交界面
  */
 import React, { useEffect } from "react"
@@ -16,6 +16,7 @@ import CodeDetail from "./CodeDetail";
 
 import './index.css'
 import CodeTextCmp from "./CodeTextCmp";
+import CodeSyntaxCmp from './CodeSyntaxCmp'
 
 const tableColumns = props => [
     { title: "提交ID", dataIndex: "id", key: "id" },
@@ -49,19 +50,31 @@ const tableColumns = props => [
         </Button>)
     },
     {
-        title: "",
+        title: "与上一版本对比",
         dataIndex: "pre",
         key: "pre",
         render: (_, record, index) => {
             if (index === props.submissions.length - 1) return "";
-            else return (<Button
-                onClick={() => {
-                    props.textCmpClick(props.submissions.find(submission =>
-                        submission.id === record.id).id);
-                }}
-                type="link">
-                与上一版本对比
-            </Button>)
+            else return (<div style={{ display: "inline-block" }}>
+                <Button
+                    onClick={() => {
+                        props.textCmpClick(record.id);
+                    }}
+                    type="link">
+                    纯文本
+                </Button>
+                <Button
+                    onClick={() => {
+                        props.syntaxCmpClick(record.id)
+                    }}
+                    disabled={
+                        props.submissions[index].result === "Compile Error" ||
+                        props.submissions[index + 1].result === "Compile Error"
+                    }
+                    type="link">
+                    语法成分
+                </Button>
+            </div>)
         }
     }
 ];
@@ -101,12 +114,22 @@ const SubmissionUI = props => {
             <Modal
                 onCancel={props.textCmpClose}
                 visible={props.textCmpVisible}
-                title="与上一版本对比"
+                title="与上一版本对比（纯文本）"
                 width={1300}
                 centered
                 footer={false}
                 maskClosable={true}>
-                <CodeTextCmp cmps={props.cmps} />
+                <CodeTextCmp cmps={props.textCmps} />
+            </Modal>
+            <Modal
+                onCancel={props.syntaxCmpClose}
+                visible={props.syntaxCmpVisible}
+                title="与上一版本对比（语法成分）"
+                width={1300}
+                centered
+                footer={false}
+                maskClosable={true}>
+                <CodeSyntaxCmp cmps={props.syntaxCmps} />
             </Modal>
         </div>
     );
@@ -117,7 +140,9 @@ const mapStateToProps = state => ({
     detailVisible: state.submission.detailVisible,
     submission: state.submission.submission,
     textCmpVisible: state.submission.textCmpVisible,
-    cmps: state.submission.cmps
+    syntaxCmpVisible: state.submission.syntaxCmpVisible,
+    textCmps: state.submission.textCmps,
+    syntaxCmps: state.submission.syntaxCmps
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -146,6 +171,15 @@ const mapDispatchToProps = dispatch => ({
             type: Actions.SUBMISSION_TEXT_CMP_CLICK,
             id: id
         });
+    },
+    syntaxCmpClick: id => {
+        dispatch({
+            type: Actions.SUBMISSION_SYNTAX_CMP_CLICK,
+            id: id
+        });
+    },
+    syntaxCmpClose: () => {
+        dispatch({ type: Actions.SUBMISSION_SYNTAX_CMP_MODAL_CLOSE });
     }
 });
 

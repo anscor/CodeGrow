@@ -11,6 +11,7 @@ from .default import *
 
 DEBUG = False
 ALLOWED_HOSTS = ["*"]
+LIBCLANG_FILE = "/usr/lib/x86_64-linux-gnu/libclang-7.so.1"
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -32,6 +33,6 @@ INSTALLED_APPS = [
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "OPTIONS": {"read_default_file": "conf/database.cnf",}
+        "OPTIONS": {"read_default_file": "conf/database.cnf",},
     }
 }

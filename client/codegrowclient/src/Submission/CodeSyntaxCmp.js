@@ -1,9 +1,9 @@
 /*
  * @Author: Anscor
- * @Date: 2020-04-14 19:15:01
+ * @Date: 2020-05-01 17:13:18
  * @LastEditors: Anscor
- * @LastEditTime: 2020-05-01 19:40:17
- * @Description: 代码纯文本对比
+ * @LastEditTime: 2020-05-03 09:36:31
+ * @Description: 代码语法成分对比
  */
 
 import React, { useEffect } from 'react'
@@ -32,16 +32,10 @@ const CodeLine = props => {
                     color: "rgba(27,31,35,.3)",
                 }}
                 className="react-syntax-highlighter-line-number">
-                {fixedLineNumber(line[props.kind + "LineNumber"],
-                    props.cmps[props.cmps.length - 1][props.kind + "LineNumber"])}
-            </span>
-            <span
-                key={props.kind + line.order + "symbol"}
-                style={{
-                    marginLeft: "10px",
-                }}>
-                {(line[props.kind + "Symbol"] === "d" ? "-" :
-                    (line[props.kind + "Symbol"] === "a" ? "+" : " ")) + "\n"}
+                {fixedLineNumber(
+                    line[props.kind + "LineNumber"],
+                    props.cmps[props.cmps.length - 1][props.kind + "LineNumber"]
+                ) + "\n"}
             </span>
         </span>)}
     </code>);
@@ -68,12 +62,9 @@ const showCode = (codes, kind) => {
     }, "").substr(1);
 };
 
-const codeColor = (codes, line, kind) => {
-    if (!codes) return "white";
-    const arr = kind === "old" ? "oldSymbol" : "newSymbol";
-    if (codes[line][arr] === "d") return "#ffeef0";
-    else if (codes[line][arr] === "a") return "#e6ffed";
-    else return "white";
+const codeColor = (codes, line) => {
+    if (!codes || codes[line].isSame) return "white";
+    return "#ffeef0";
 };
 
 const scrollFunc = (one, other, isIn) => {
@@ -87,8 +78,8 @@ const scrollFunc = (one, other, isIn) => {
 
 export default props => {
     useEffect(() => {
-        const pre = document.getElementsByClassName("code-cmp-pre text")[0];
-        const now = document.getElementsByClassName("code-cmp-now text")[0];
+        const pre = document.getElementsByClassName("code-cmp-pre syntax")[0];
+        const now = document.getElementsByClassName("code-cmp-now syntax")[0];
         let isPre = false, isNow = false;
         if (!pre || !now) return;
         pre.scrollTop = 0;
@@ -101,7 +92,7 @@ export default props => {
         pre.addEventListener("scroll", () => scrollFunc(pre, now, isPre));
         pre.addEventListener("mouseleave", () => {
             isPre = false;
-        })
+        });
         now.addEventListener("mouseenter", () => {
             isNow = true;
         });
@@ -114,7 +105,7 @@ export default props => {
         <Skeleton loading={props.cmps === undefined}>
             <div className="code-cmp-box">
                 <div
-                    className="code-cmp-pre text">
+                    className="code-cmp-pre syntax">
                     <p>上一版本</p>
                     <SyntaxHighlighter
                         language="cpp"
@@ -125,7 +116,7 @@ export default props => {
                         lineProps={lineNumber => {
                             let style = {
                                 background: codeColor(props.cmps,
-                                    lineNumber - 1, "old"),
+                                    lineNumber - 1),
                                 display: "block"
                             };
                             return { style: style, className: "code-line" };
@@ -135,7 +126,7 @@ export default props => {
                     </SyntaxHighlighter>
                 </div>
                 <div
-                    className="code-cmp-now text">
+                    className="code-cmp-now syntax">
                     <p>当前版本</p>
                     <SyntaxHighlighter
                         language="cpp"
@@ -146,7 +137,7 @@ export default props => {
                         lineProps={lineNumber => {
                             let style = {
                                 background: codeColor(props.cmps,
-                                    lineNumber - 1, "new"),
+                                    lineNumber - 1),
                                 display: "block"
                             };
                             return { style: style, className: "code-line" };
