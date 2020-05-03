@@ -2,7 +2,7 @@
  * @Author: Anscor
  * @Date: 2020-04-13 17:56:45
  * @LastEditors: Anscor
- * @LastEditTime: 2020-05-03 11:19:25
+ * @LastEditTime: 2020-05-03 11:49:01
  * @Description: 提交界面
  */
 import React, { useEffect } from "react"
@@ -43,7 +43,8 @@ const tableColumns = props => [
         render: (_, record) => (<Button
             type="link"
             onClick={() => {
-                props.detailClick(record.id);
+                props.detailClick(props.submissions.find(submission =>
+                    submission.id === record.id));
             }}>
             代码详情
         </Button>)
@@ -53,7 +54,6 @@ const tableColumns = props => [
         dataIndex: "pre",
         key: "pre",
         render: (_, record, index) => {
-            console.log(index);
             if (index === props.submissions.length - 1) return "";
             else return (<div style={{ display: "inline-block" }}>
                 <Button
