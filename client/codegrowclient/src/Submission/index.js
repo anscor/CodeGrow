@@ -2,7 +2,7 @@
  * @Author: Anscor
  * @Date: 2020-04-13 17:56:45
  * @LastEditors: Anscor
- * @LastEditTime: 2020-05-01 17:15:11
+ * @LastEditTime: 2020-05-03 11:19:25
  * @Description: 提交界面
  */
 import React, { useEffect } from "react"
@@ -43,8 +43,7 @@ const tableColumns = props => [
         render: (_, record) => (<Button
             type="link"
             onClick={() => {
-                props.detailClick(props.submissions.find(submission =>
-                    submission.id === record.id));
+                props.detailClick(record.id);
             }}>
             代码详情
         </Button>)
@@ -54,6 +53,7 @@ const tableColumns = props => [
         dataIndex: "pre",
         key: "pre",
         render: (_, record, index) => {
+            console.log(index);
             if (index === props.submissions.length - 1) return "";
             else return (<div style={{ display: "inline-block" }}>
                 <Button
@@ -68,8 +68,12 @@ const tableColumns = props => [
                         props.syntaxCmpClick(record.id)
                     }}
                     disabled={
-                        props.submissions[index].result === "Compile Error" ||
-                        props.submissions[index + 1].result === "Compile Error"
+                        props.submissions.find(
+                            submission => submission.id === record.id
+                        ).result === "Compile Error" ||
+                        props.submissions.find(
+                            submission => submission.id < record.id
+                        ).result === "Compile Error"
                     }
                     type="link">
                     语法成分
