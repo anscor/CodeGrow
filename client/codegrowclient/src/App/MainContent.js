@@ -2,7 +2,7 @@
  * @Author: Anscor
  * @Date: 2020-04-10 16:40:15
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-15 16:05:53
+ * @LastEditTime: 2020-05-04 10:39:16
  * @Description: Main Content
  */
 
@@ -14,6 +14,7 @@ import Home from '../Home'
 import About from '../About'
 import Submission from '../Submission'
 import Profile from '../Profile'
+import Statistics from '../Statistics'
 
 export default () => {
     return (
@@ -26,6 +27,7 @@ export default () => {
                 <Route path="/about/" component={About} />
                 <Route path="/submission/" component={Submission} />
                 <Route path="/profile/" component={Profile} />
+                <Route path="/statistics/" component={Statistics} />
             </div>
         </Layout.Content>
     );

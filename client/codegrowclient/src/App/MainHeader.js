@@ -2,7 +2,7 @@
  * @Author: Anscor
  * @Date: 2020-04-10 16:23:01
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-13 17:49:57
+ * @LastEditTime: 2020-05-04 10:39:39
  * @Description: Main Header
  */
 
@@ -45,7 +45,6 @@ const HeaderMenu = props => (
             defaultSelectedKeys={['home']}
             onClick={props.mainMenuClick}>
             <Menu.Item key="home">HOME</Menu.Item>
-            <Menu.Item key="about">关于</Menu.Item>
             <UserMenu userMenuClick={props.userMenuClick} />
         </Menu>
     </div>

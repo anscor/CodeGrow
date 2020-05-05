@@ -148,17 +148,6 @@ header_replace = """// C++ includes used for precompiling -*- C++ -*-
 """
 
 
-def dfs(node, indent=0):
-    if node is None:
-        return
-    sapce = ""
-    for i in range(indent):
-        sapce += "  "
-    print(sapce, node.cursor.kind.name)
-    for child in node.children:
-        dfs(child, indent + 1)
-
-
 class SyntaxTree:
     def __init__(self):
         self.__parent = None
@@ -603,7 +592,9 @@ class Query(ObjectType):
                 i += 116
             # 每行对应的Token
             tokens = tu.get_tokens(
-                extent=tu.get_extent("test.cpp", ((i + 1, 1), (i + 1, len(line))))
+                extent=tu.get_extent(
+                    "test.cpp", ((i + 1, 1), (i + 1, len(line)))
+                )
             )
             # Token对应的语法树节点
             nodes = []

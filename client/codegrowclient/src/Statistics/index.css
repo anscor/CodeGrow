@@ -1,0 +1,34 @@
+.statistics-box {
+    display: flex;
+    width: 100%;
+}
+
+.user-select {
+    width: 30%;
+    height: 100%;
+    padding-right: 12px;
+}
+
+.statistics {
+    width: 70%;
+    height: 100%;
+    padding-left: 12px;
+}
+
+.statistics-pic {
+    height: 60%;
+}
+
+.statistics-pic>* {
+    height: 100%;
+    max-width: 100%;
+}
+
+.statistics-day {
+    height: 40%;
+}
+
+.statistics-day>* {
+    height: 100%;
+    max-width: 100%;
+}

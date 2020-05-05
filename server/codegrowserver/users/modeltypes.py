@@ -66,12 +66,18 @@ class UserType(DjangoObjectType):
     """
 
     profile = graphene.Field(UserProfileType)
+    is_teacher = graphene.Boolean()
 
     def resolve_profile(self, info):
         # 如果没有profile则返回None
         if not hasattr(self, "profile"):
             return None
         return self.profile
+
+    def resolve_is_teacher(self, info):
+        if self.groups.all().filter(name="教师"):
+            return True
+        return False
 
     class Meta:
         model = User
