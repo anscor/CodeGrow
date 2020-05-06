@@ -47,9 +47,7 @@ class Query(object):
     查询
     """
 
-    all_user = graphene.List(
-        UserType, user_id=graphene.Int(), problem_id=graphene.Int()
-    )
+    all_user = graphene.List(UserType, problem_id=graphene.Int())
     all_group = graphene.List(GroupType)
     user = graphene.Field(UserType)
 

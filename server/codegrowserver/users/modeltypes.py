@@ -67,6 +67,7 @@ class UserType(DjangoObjectType):
 
     profile = graphene.Field(UserProfileType)
     is_teacher = graphene.Boolean()
+    is_admin = graphene.Boolean()
 
     def resolve_profile(self, info):
         # 如果没有profile则返回None
@@ -78,6 +79,9 @@ class UserType(DjangoObjectType):
         if self.groups.all().filter(name="教师"):
             return True
         return False
+    
+    def resolve_is_admin(self, info):
+        return self.is_staff
 
     class Meta:
         model = User
