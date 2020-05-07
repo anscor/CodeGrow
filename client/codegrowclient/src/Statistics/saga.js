@@ -2,11 +2,11 @@
  * @Author: Anscor
  * @Date: 2020-05-04 10:42:40
  * @LastEditors: Anscor
- * @LastEditTime: 2020-05-06 21:25:57
+ * @LastEditTime: 2020-05-07 19:51:37
  * @Description: file content
  */
 
-import { take, call, all, put } from 'redux-saga/effects'
+import { take, call, all, put, fork } from 'redux-saga/effects'
 
 import * as Actions from '../redux/actions'
 import { fetchApi } from '../Top'
@@ -52,13 +52,49 @@ function* fetchUsers(user, id) {
     }
 }
 
-function* fetchStatistics(selectedUsers) {
+function* fetchStatistics(selectedUsers, id) {
+    const init_statistics = ({
+        "total": [],
+        "days": []
+    });
+    if (!selectedUsers) yield put({
+        type: Actions.STATISTICS_SET_STATISTICS,
+        statistics: init_statistics
+    });
+    console.log(selectedUsers);
 
+
+    const { data, err } = yield call(fetchApi, `{
+        submissionStatistics(problemId: ${id}, queryUsers: [${selectedUsers}]) {
+            total {
+                result
+                count
+            }
+            days {
+                day
+                total
+                accept
+            }
+        }
+    }`, true);
+    if (data) {
+        yield put({
+            type: Actions.STATISTICS_SET_STATISTICS,
+            statistics: data.data.submissionStatistics
+        });
+    } else {
+        yield put({
+            type: Actions.STATISTICS_SET_STATISTICS,
+            statistics: init_statistics
+        });
+        yield put({ type: Actions.TOP_MESSAGE, message: err });
+    }
 }
 
 function* fetchUsersSaga() {
     while (true) {
         const action = yield take(Actions.STATISTICS_FETCH_USERS);
+        yield fork(fetchStatistics, [], action.id);
         yield call(fetchUsers, action.user, action.id);
     }
 }
@@ -66,7 +102,13 @@ function* fetchUsersSaga() {
 function* fetchStatisticsSaga() {
     while (true) {
         const action = yield take(Actions.STATISTICS_SELECTED_USERS_CHANGED);
-        yield call(fetchUsers, action.selectedUsers);
+        yield put({
+            type: Actions.STATISTICS_SET_STATISTICS, statistics: {
+                total: [],
+                days: []
+            }
+        });
+        yield call(fetchStatistics, action.selectedUsers, action.id);
     }
 }
 

@@ -12,15 +12,19 @@ from rest_framework.permissions import IsAuthenticated
 from clang.cindex import Index, Cursor, Config, Token
 from django.conf import settings
 from queue import Queue
+from graphene_django.types import ObjectType
+from graphene_django_extras.utils import get_Object_or_None
 
 from codes.models import Submission, CodeTextLineCmp
 from codes.modeltypes import (
     SubmissionType,
     CodeTextLineCmpType,
     CodeSyntaxLineCmp,
+    SubmissionStatisticsType,
 )
 from users.permissions import wrap_query_permission
-from graphene_django.types import ObjectType
+from users.models import User
+from problems.models import Problem
 
 import graphene
 import operator
@@ -230,6 +234,11 @@ class Query(ObjectType):
     )
     code_syntax_cmp = graphene.List(
         CodeSyntaxLineCmp, submission_id=graphene.Int()
+    )
+    submission_statistics = graphene.Field(
+        SubmissionStatisticsType,
+        query_users=graphene.List(graphene.Int),
+        problem_id=graphene.Int(required=True),
     )
 
     @wrap_query_permission([IsAuthenticated])
@@ -499,6 +508,73 @@ class Query(ObjectType):
             last_new += 1
             i += 1
         return cmp_lines
+
+    @wrap_query_permission([IsAuthenticated])
+    def resolve_submission_statistics(self, info, **kwargs):
+        user = info.context.user
+        problem_id = kwargs.get("problem_id")
+        query_users = kwargs.get("query_users", None)
+        # 没有找到相应的题目
+        if not get_Object_or_None(Problem, pk=problem_id):
+            return None
+        # 找出所有符合条件的提交
+        submissions = Submission.objects.filter(problem_id=problem_id).only(
+            "user_id", "result", "submit_time"
+        )
+        if not submissions:
+            return None
+        # 如果不是教师和管理员，则只能查看自己的提交
+        if not user.groups.all().filter(name="教师") and not user.is_staff:
+            submissions = submissions.filter(user_id=user.id)
+        else:
+            uids = set()
+            # 传入了要查询的用户
+            if query_users and len(query_users) > 0:
+                uids = {
+                    user.id
+                    for user in User.objects.filter(id__in=query_users).only(
+                        "id"
+                    )
+                }
+            else:
+                uids = {user.id for user in User.objects.only("id")}
+
+            if not user.is_staff:
+                us = {
+                    user.id
+                    for user in user.groups.all()
+                    .filter(name=user.profile.name)
+                    .user_set.all()
+                }
+                uids = uids.intersection(us)
+
+            submissions = submissions.filter(user_id__in=uids)
+
+        total = {}
+        days = {}
+        for submission in submissions:
+            time = submission.submit_time.strftime("%Y-%m-%d")
+            accept = int(submission.result == "Accepted")
+            if time not in days.keys():
+                days[time] = {"total": 1, "accept": accept}
+            else:
+                days[time]["total"] += 1
+                days[time]["accept"] += accept
+
+            if submission.result not in total.keys():
+                total[submission.result] = 1
+            else:
+                total[submission.result] += 1
+
+        total_list = [
+            {"result": key, "count": value} for key, value in total.items()
+        ]
+        days_list = [
+            {"day": key, "total": value["total"], "accept": value["accept"]}
+            for key, value in days.items()
+        ]
+
+        return {"total": total_list, "days": days_list}
 
     def __get_submission(submission_id, info):
         # 要比较的提交

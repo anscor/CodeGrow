@@ -39,3 +39,19 @@ class CodeSyntaxLineCmp(DjangoObjectType):
     class Meta:
         model = CodeSyntaxLineCmp
         exclude_fields = ["id"]
+
+
+class SubmissionStatisticsTotalType(graphene.ObjectType):
+    result = graphene.String()
+    count = graphene.Int()
+
+
+class SubmissionStatisticsDaysType(graphene.ObjectType):
+    day = graphene.String()
+    accept = graphene.Int()
+    total = graphene.Int()
+
+
+class SubmissionStatisticsType(graphene.ObjectType):
+    total = graphene.List(SubmissionStatisticsTotalType)
+    days = graphene.List(SubmissionStatisticsDaysType)

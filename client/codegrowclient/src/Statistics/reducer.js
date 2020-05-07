@@ -2,7 +2,7 @@
  * @Author: Anscor
  * @Date: 2020-05-04 10:42:36
  * @LastEditors: Anscor
- * @LastEditTime: 2020-05-06 21:55:29
+ * @LastEditTime: 2020-05-07 20:08:18
  * @Description: file content
  */
 
@@ -36,6 +36,10 @@ export default (state = {}, action) => {
         case Actions.STATISTICS_SET_TABLE_SCROLL_Y:
             return Object.assign({}, state, {
                 tableScrollY: action.y
+            });
+        case Actions.STATISTICS_SET_STATISTICS:
+            return Object.assign({}, state, {
+                statistics: action.statistics
             });
         default:
             return state;

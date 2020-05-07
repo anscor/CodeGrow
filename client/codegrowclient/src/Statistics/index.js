@@ -2,13 +2,13 @@
  * @Author: Anscor
  * @Date: 2020-05-04 10:35:15
  * @LastEditors: Anscor
- * @LastEditTime: 2020-05-06 22:13:30
+ * @LastEditTime: 2020-05-07 20:09:30
  * @Description: 提交统计界面
  */
 
 import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
-import { PieChart, OverlappedComboChart } from '@opd/g2plot-react'
+import { PieChart, GroupedColumnLineChart } from '@opd/g2plot-react'
 import { Table, Empty } from 'antd';
 import { useLocation } from 'react-router-dom';
 
@@ -45,19 +45,8 @@ const columns = [
 ];
 
 const pieConfig = {
-    // title: {
-    //     visible: true,
-    //     text: "提交统计"
-    // },
-    // description: {
-    //     visible: true,
-    //     text: "对提交的结果进行统计"
-    // },
     label: {
         type: "spider"
-    },
-    tooltip: {
-        visible: false
     },
     forceFit: true,
     radius: 1,
@@ -65,124 +54,53 @@ const pieConfig = {
     colorField: "result"
 };
 
-const genOverStackData = statistics => {
-    return [];
-};
-// [
-//     {
-//         type: "提交总数",
-//         count: 40,
-//         day: "10"
-//     },
-//     {
-//         type: "提交总数",
-//         count: 8,
-//         day: "11"
-//     },
-//     {
-//         type: "提交总数",
-//         count: 17,
-//         day: "12"
-//     },
-//     {
-//         type: "提交总数",
-//         count: 35,
-//         day: "13"
-//     },
-//     {
-//         type: "正确",
-//         count: 10,
-//         day: "10"
-//     },
-
-//     {
-//         type: "正确",
-//         count: 5,
-//         day: "11"
-//     },
-//     {
-//         type: "正确",
-//         count: 12,
-//         day: "12"
-//     },
-//     {
-//         type: "正确",
-//         count: 20,
-//         day: "13"
-//     }
-// ];
-
-// const genOverLineData = [
-//     {
-//         acc_ratio: 0.25,
-//         day: "10"
-//     },
-//     {
-//         acc_ratio: 0.625,
-//         day: "11"
-//     },
-//     {
-//         acc_ratio: 0.7,
-//         day: "12"
-//     },
-//     {
-//         acc_ratio: 0.57,
-//         day: "13"
-//     },
-// ];
-
-const genOverLineData = statistics => {
-    return [];
+const genGroupData = days => {
+    const total = days.map(day => ({
+        day: day.day,
+        count: day.total,
+        type: "提交总数"
+    }));
+    const accept = days.map(day => ({
+        day: day.day,
+        count: day.accept,
+        type: "正确数"
+    }));
+    return total.concat(accept);
 };
 
-const genOverConfig = statistics => ({
-    title: {
-        visible: true,
-        text: "每日提交"
-    },
+const genLineData = days => {
+    return days.map(day => ({
+        day: day.day,
+        "正确率": Number(day.accept / day.total * 100).toFixed(2)
+    }));
+};
+
+const genConfig = days => ({
     xAxis: {
         visible: true,
         title: {
             visible: true,
             text: "日期"
-        }
-    },
-    yAxis: {
-        visible: false
-    },
-    tooltip: {
-        visible: false
-    },
-    layers: [
-        {
-            type: "groupedColumn",
-            name: "提交数与正确数",
-            xField: "day",
-            yField: "count",
-            groupField: "type",
-            data: genOverStackData(statistics),
-            tooltip: {
-                visible: false
-            },
-            label: {
-                visible: true
-            },
         },
-        {
-            type: "line",
-            name: "正确率",
-            xField: "day",
-            yField: "acc_ratio",
-            data: genOverLineData(statistics),
-            color: "#f8ca45",
-            tooltip: {
-                visible: false
-            },
-            label: {
-                visible: true
-            },
+        tickCount: 5
+    },
+    forceFit: true,
+    lineConfig: {
+        label: {
+            visible: true,
+            type: "point"
         }
-    ]
+    },
+    columnConfig: {
+        label: {
+            visible: true,
+            position: "top"
+        }
+    },
+    data: [genGroupData(days), genLineData(days)],
+    groupField: "type",
+    xField: "day",
+    yField: ["count", "正确率"]
 });
 
 const StatisticsUI = props => {
@@ -210,7 +128,12 @@ const StatisticsUI = props => {
                 rowSelection={{
                     hideDefaultSelections: true,
                     selectedRowKeys: props.selectedUsers,
-                    onChange: props.onSelectedUsersChange,
+                    onChange: selectedUsers => {
+                        props.onSelectedUsersChange(
+                            selectedUsers,
+                            location.state.id
+                        )
+                    },
                     getCheckboxProps: () => ({
                         disabled: props.users.length <= 1
                     })
@@ -239,13 +162,13 @@ const StatisticsUI = props => {
                             }))} />
                 }
             </div>
-            <div className="statistics-day">
+            {/* <div className="statistics-day" key={props.key}>
                 {
                     props.statistics.days.length === 0 ? <Empty
                         image={Empty.PRESENTED_IMAGE_SIMPLE} /> :
-                        <OverlappedComboChart {...genOverConfig(props.statistics)} />
+                        <GroupedColumnLineChart {...genConfig(props.statistics.days)} />
                 }
-            </div>
+            </div> */}
         </div>
     </div>);
 };
@@ -267,10 +190,11 @@ const mapDispathcToProps = (dispatch) => ({
             id: id
         });
     },
-    onSelectedUsersChange: selectedUsers => {
+    onSelectedUsersChange: (selectedUsers, id) => {
         dispatch({
             type: Actions.STATISTICS_SELECTED_USERS_CHANGED,
-            selectedUsers: selectedUsers
+            selectedUsers: selectedUsers,
+            id: id
         });
     },
     setTableScrollY: y => {
