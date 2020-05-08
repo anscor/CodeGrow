@@ -2,7 +2,7 @@
  * @Author: Anscor
  * @Date: 2020-05-04 10:42:40
  * @LastEditors: Anscor
- * @LastEditTime: 2020-05-07 19:51:37
+ * @LastEditTime: 2020-05-08 10:40:35
  * @Description: file content
  */
 
@@ -61,8 +61,6 @@ function* fetchStatistics(selectedUsers, id) {
         type: Actions.STATISTICS_SET_STATISTICS,
         statistics: init_statistics
     });
-    console.log(selectedUsers);
-
 
     const { data, err } = yield call(fetchApi, `{
         submissionStatistics(problemId: ${id}, queryUsers: [${selectedUsers}]) {
@@ -102,12 +100,6 @@ function* fetchUsersSaga() {
 function* fetchStatisticsSaga() {
     while (true) {
         const action = yield take(Actions.STATISTICS_SELECTED_USERS_CHANGED);
-        yield put({
-            type: Actions.STATISTICS_SET_STATISTICS, statistics: {
-                total: [],
-                days: []
-            }
-        });
         yield call(fetchStatistics, action.selectedUsers, action.id);
     }
 }

@@ -58,15 +58,15 @@ class Query(object):
         user = info.context.user
 
         # 如果是教师，则根据此教师的组进行过滤
-        if user.groups.all().filter(name="教师").first():
-            if not hasattr(user, "profile"):
-                return None
-            g = get_Object_or_None(Group, name=user.profile.name)
-            if not g:
-                return None
+        # if user.groups.all().filter(name="教师").first():
+        #     if not hasattr(user, "profile"):
+        #         return None
+        #     g = get_Object_or_None(Group, name=user.profile.name)
+        #     if not g:
+        #         return None
 
-            uids = {user.id for user in g.user_set.all()}
-            users = users.filter(id__in=uids)
+        #     uids = {user.id for user in g.user_set.all()}
+        #     users = users.filter(id__in=uids)
 
         if problem_id:
             problem = get_Object_or_None(Problem, id=problem_id)

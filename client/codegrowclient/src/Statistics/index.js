@@ -2,15 +2,16 @@
  * @Author: Anscor
  * @Date: 2020-05-04 10:35:15
  * @LastEditors: Anscor
- * @LastEditTime: 2020-05-07 20:09:30
+ * @LastEditTime: 2020-05-08 10:38:36
  * @Description: 提交统计界面
  */
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { connect } from 'react-redux'
 import { PieChart, GroupedColumnLineChart } from '@opd/g2plot-react'
-import { Table, Empty } from 'antd';
+import { Table, Empty, Skeleton } from 'antd';
 import { useLocation } from 'react-router-dom';
+import { GroupedColumnLine } from '@antv/g2plot'
 
 import * as Actions from '../redux/actions'
 import './index.css'
@@ -71,7 +72,7 @@ const genGroupData = days => {
 const genLineData = days => {
     return days.map(day => ({
         day: day.day,
-        "正确率": Number(day.accept / day.total * 100).toFixed(2)
+        "正确率": Number((day.accept / day.total * 100).toFixed(2))
     }));
 };
 
@@ -102,6 +103,28 @@ const genConfig = days => ({
     xField: "day",
     yField: ["count", "正确率"]
 });
+
+const Pie = props => {
+    let item = <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />;
+    if (props.total && props.total.length !== 0)
+        item = <PieChart {...pieConfig} data={
+            props.total.map(result => ({
+                result: result.result,
+                count: result.count
+            }))} />;
+    return (<Skeleton loading={props.loading} active>
+        {item}
+    </Skeleton>);
+};
+
+const Days = props => {
+    let item = <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />;
+    if (props.days && props.days.length !== 0)
+        item = <GroupedColumnLineChart {...genConfig(props.days)} />;
+    return (<Skeleton loading={props.loading} active>
+        {item}
+    </Skeleton>);
+};
 
 const StatisticsUI = props => {
     const location = useLocation();
@@ -152,23 +175,11 @@ const StatisticsUI = props => {
         <div className="statistics">
             <div style={{ height: "5%" }}><h1>提交统计</h1></div>
             <div className="statistics-pic">
-                {
-                    props.statistics.total.length === 0 ? <Empty
-                        image={Empty.PRESENTED_IMAGE_SIMPLE} /> :
-                        <PieChart {...pieConfig} data={
-                            props.statistics.total.map(result => ({
-                                result: result.result,
-                                count: result.count
-                            }))} />
-                }
+                <Pie total={props.statistics.total} loading={props.picLoading} />
             </div>
-            {/* <div className="statistics-day" key={props.key}>
-                {
-                    props.statistics.days.length === 0 ? <Empty
-                        image={Empty.PRESENTED_IMAGE_SIMPLE} /> :
-                        <GroupedColumnLineChart {...genConfig(props.statistics.days)} />
-                }
-            </div> */}
+            <div className="statistics-day">
+                <Days days={props.statistics.days} loading={props.picLoading} />
+            </div>
         </div>
     </div>);
 };
@@ -179,7 +190,8 @@ const mapStateToProps = state => ({
     selectedUsers: state.statistics.selectedUsers,
     tableLoading: state.statistics.tableLoading,
     tableScrollY: state.statistics.tableScrollY,
-    statistics: state.statistics.statistics
+    statistics: state.statistics.statistics,
+    picLoading: state.statistics.picLoading
 });
 
 const mapDispathcToProps = (dispatch) => ({

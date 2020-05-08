@@ -2,7 +2,7 @@
  * @Author: Anscor
  * @Date: 2020-04-13 17:07:52
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-15 16:09:16
+ * @LastEditTime: 2020-05-08 10:40:13
  * @Description: App saga
  */
 import { put, call, take, all } from 'redux-saga/effects'
@@ -25,7 +25,6 @@ const doUserMenuClick = (key, history) => {
 };
 
 const doMainMenuClick = key => {
-    console.log(key);
     switch (key) {
         case "home":
             break;

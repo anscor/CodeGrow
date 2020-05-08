@@ -228,12 +228,16 @@ class SyntaxTree:
 
 
 class Query(ObjectType):
-    submissions = graphene.List(SubmissionType, problem_id=graphene.Int())
+    submissions = graphene.List(
+        SubmissionType, user_id=graphene.Int(), problem_id=graphene.Int()
+    )
     code_text_cmp = graphene.List(
-        CodeTextLineCmpType, submission_id=graphene.Int()
+        CodeTextLineCmpType,
+        user_id=graphene.Int(),
+        submission_id=graphene.Int(),
     )
     code_syntax_cmp = graphene.List(
-        CodeSyntaxLineCmp, submission_id=graphene.Int()
+        CodeSyntaxLineCmp, user_id=graphene.Int(), submission_id=graphene.Int()
     )
     submission_statistics = graphene.Field(
         SubmissionStatisticsType,
@@ -243,9 +247,11 @@ class Query(ObjectType):
 
     @wrap_query_permission([IsAuthenticated])
     def resolve_submissions(self, info, **kwargs):
-        ss = Submission.objects.filter(user_id=info.context.user.id).order_by(
-            "-id"
-        )
+        user = info.context.user
+        user_id = user.id
+        if user.groups.all().filter(name="教师") or user.is_staff:
+            user_id = kwargs.get("user_id", user_id)
+        ss = Submission.objects.filter(user_id=user_id).order_by("-id")
         pid = kwargs.get("problem_id", None)
         if pid:
             ss = ss.filter(problem_id=pid)
@@ -532,21 +538,21 @@ class Query(ObjectType):
             if query_users and len(query_users) > 0:
                 uids = {
                     user.id
-                    for user in User.objects.filter(id__in=query_users).only(
-                        "id"
+                    for user in User.objects.filter(
+                        profile__student_number__in=query_users
                     )
                 }
             else:
                 uids = {user.id for user in User.objects.only("id")}
 
-            if not user.is_staff:
-                us = {
-                    user.id
-                    for user in user.groups.all()
-                    .filter(name=user.profile.name)
-                    .user_set.all()
-                }
-                uids = uids.intersection(us)
+            # if not user.is_staff:
+            #     us = {
+            #         user.id
+            #         for user in user.groups.all()
+            #         .filter(name=user.profile.name)
+            #         .user_set.all()
+            #     }
+            #     uids = uids.intersection(us)
 
             submissions = submissions.filter(user_id__in=uids)
 
@@ -577,17 +583,22 @@ class Query(ObjectType):
         return {"total": total_list, "days": days_list}
 
     def __get_submission(submission_id, info):
+        user = info.context.user
+        check_user = (
+            not user.groups.all().filter(name="教师") and not user.is_staff
+        )
         # 要比较的提交
-        submission = Submission.objects.filter(
-            id=submission_id, user_id=info.context.user.id
-        ).first()
+        submission = Submission.objects.filter(id=submission_id).first()
         if not submission:
+            return None, None
+        
+        if check_user and submission.user_id != user.id:
             return None, None
 
         # 同一题目、同一用户的前一个提交
         pre_submission = (
             Submission.objects.filter(
-                user_id=info.context.user.id,
+                user_id=submission.user_id,
                 id__lt=submission_id,
                 problem_id=submission.problem_id,
             )

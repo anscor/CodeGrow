@@ -2,14 +2,14 @@
  * @Author: Anscor
  * @Date: 2020-04-13 17:56:45
  * @LastEditors: Anscor
- * @LastEditTime: 2020-05-03 11:49:01
+ * @LastEditTime: 2020-05-08 17:01:56
  * @Description: 提交界面
  */
 import React, { useEffect } from "react"
 import { connect } from 'react-redux'
 
 import * as Actions from '../redux/actions'
-import { Table, Button, Modal } from "antd";
+import { Table, Button, Modal, Select, Skeleton, Space } from "antd";
 import { useLocation } from "react-router-dom";
 import { toLocalDate } from "../Top";
 import CodeDetail from "./CodeDetail";
@@ -53,8 +53,9 @@ const tableColumns = props => [
         title: "与上一版本对比",
         dataIndex: "pre",
         key: "pre",
-        render: (_, record, index) => {
-            if (index === props.submissions.length - 1) return "";
+        render: (_, record) => {
+            if (record.id ===
+                props.submissions[props.submissions.length - 1].id) return "";
             else return (<div style={{ display: "inline-block" }}>
                 <Button
                     onClick={() => {
@@ -72,7 +73,7 @@ const tableColumns = props => [
                             submission => submission.id === record.id
                         ).result === "Compile Error" ||
                         props.submissions.find(
-                            submission => submission.id < record.id
+                            submission => Number(submission.id) < record.id
                         ).result === "Compile Error"
                     }
                     type="link">
@@ -83,11 +84,36 @@ const tableColumns = props => [
     }
 ];
 
+const SelectStudent = props => {
+    return (<Space style={{ marginBottom: "10px" }}>
+        <h1>选择学生：</h1>
+        <Skeleton loading={props.users.length === 0} active>
+            <Select
+                onChange={value => props.onUserChange(value, props.problemId)}
+                filterOption={(input, option) =>
+                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+                defaultValue={props.users.length === 0 ? [] : props.users[0].id}
+                style={{ width: 200 }}
+                optionFilterProp="children"
+                showSearch>
+                {
+                    props.users.map(user => (<Select.Option
+                        value={user.id}
+                        key={user.id}>
+                        {user.profile.studentNumber + "  " + user.profile.name}
+                    </Select.Option>))
+                }
+            </Select>
+        </Skeleton>
+    </Space>);
+};
+
 const SubmissionUI = props => {
     const location = useLocation();
     useEffect(() => {
-        props.initialRequest(location.state.id);
-    }, [location]);
+        props.initialRequest(props.user, location.state.id);
+    }, [location, props.user]);
     const data = props.submissions ? props.submissions.map(submission => ({
         key: submission.id,
         id: submission.id,
@@ -100,6 +126,10 @@ const SubmissionUI = props => {
     })) : [];
     return (
         <div>
+            <SelectStudent
+                users={props.users}
+                onUserChange={props.onUserChange}
+                problemId={location.state.id} />
             <Table
                 columns={tableColumns(props)}
                 pagination={10}
@@ -140,6 +170,8 @@ const SubmissionUI = props => {
 }
 
 const mapStateToProps = state => ({
+    user: state.top.user,
+    users: state.submission.users,
     submissions: state.submission.submissions,
     detailVisible: state.submission.detailVisible,
     submission: state.submission.submission,
@@ -150,9 +182,10 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    initialRequest: id => {
+    initialRequest: (user, id) => {
         dispatch({
-            type: Actions.SUBMISSION_FETCH_SUBMISSIONS,
+            type: Actions.SUBMISSION_FETCH_ALL_USER,
+            user: user,
             id: id
         });
     },
@@ -184,6 +217,13 @@ const mapDispatchToProps = dispatch => ({
     },
     syntaxCmpClose: () => {
         dispatch({ type: Actions.SUBMISSION_SYNTAX_CMP_MODAL_CLOSE });
+    },
+    onUserChange: (user, id) => {
+        dispatch({
+            type: Actions.SUBMISSION_FETCH_SUBMISSIONS,
+            user: user,
+            id: id
+        });
     }
 });
 

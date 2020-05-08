@@ -2,7 +2,7 @@
  * @Author: Anscor
  * @Date: 2020-04-10 16:46:56
  * @LastEditors: Anscor
- * @LastEditTime: 2020-05-04 10:33:57
+ * @LastEditTime: 2020-05-08 10:42:13
  * @Description: Home
  */
 import React from 'react'
@@ -92,7 +92,7 @@ const HomeUI = props => {
                             }
                         }}
                         disabled={props.disabled}>
-                        我的提交
+                        提交列表
                     </Link>);
                 }
             },
