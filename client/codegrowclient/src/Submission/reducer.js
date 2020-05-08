@@ -2,13 +2,15 @@
  * @Author: Anscor
  * @Date: 2020-04-13 19:01:38
  * @LastEditors: Anscor
- * @LastEditTime: 2020-05-01 18:59:58
+ * @LastEditTime: 2020-05-08 17:03:26
  * @Description: 提交模块reducer
  */
 
 import * as Actions from '../redux/actions'
 
 export const initialState = {
+    user: undefined,
+    users: [],
     submissions: undefined,
     detailVisible: false,
     textCmpVisible: false,
@@ -22,6 +24,10 @@ export default (state = {}, action) => {
     switch (action.type) {
         case Actions.TOP_INIT_ALL:
             return initialState;
+        case Actions.SUBMISSION_SET_USERS:
+            return Object.assign({}, state, {
+                users: action.users
+            });
         case Actions.SUBMISSION_FETCH_SUBMISSIONS_SUCCESS:
             return Object.assign({}, state, {
                 submissions: action.submissions

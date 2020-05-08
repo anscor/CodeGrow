@@ -12,15 +12,19 @@ from rest_framework.permissions import IsAuthenticated
 from clang.cindex import Index, Cursor, Config, Token
 from django.conf import settings
 from queue import Queue
+from graphene_django.types import ObjectType
+from graphene_django_extras.utils import get_Object_or_None
 
 from codes.models import Submission, CodeTextLineCmp
 from codes.modeltypes import (
     SubmissionType,
     CodeTextLineCmpType,
     CodeSyntaxLineCmp,
+    SubmissionStatisticsType,
 )
 from users.permissions import wrap_query_permission
-from graphene_django.types import ObjectType
+from users.models import User
+from problems.models import Problem
 
 import graphene
 import operator
@@ -148,17 +152,6 @@ header_replace = """// C++ includes used for precompiling -*- C++ -*-
 """
 
 
-def dfs(node, indent=0):
-    if node is None:
-        return
-    sapce = ""
-    for i in range(indent):
-        sapce += "  "
-    print(sapce, node.cursor.kind.name)
-    for child in node.children:
-        dfs(child, indent + 1)
-
-
 class SyntaxTree:
     def __init__(self):
         self.__parent = None
@@ -235,19 +228,30 @@ class SyntaxTree:
 
 
 class Query(ObjectType):
-    submissions = graphene.List(SubmissionType, problem_id=graphene.Int())
+    submissions = graphene.List(
+        SubmissionType, user_id=graphene.Int(), problem_id=graphene.Int()
+    )
     code_text_cmp = graphene.List(
-        CodeTextLineCmpType, submission_id=graphene.Int()
+        CodeTextLineCmpType,
+        user_id=graphene.Int(),
+        submission_id=graphene.Int(),
     )
     code_syntax_cmp = graphene.List(
-        CodeSyntaxLineCmp, submission_id=graphene.Int()
+        CodeSyntaxLineCmp, user_id=graphene.Int(), submission_id=graphene.Int()
+    )
+    submission_statistics = graphene.Field(
+        SubmissionStatisticsType,
+        query_users=graphene.List(graphene.Int),
+        problem_id=graphene.Int(required=True),
     )
 
     @wrap_query_permission([IsAuthenticated])
     def resolve_submissions(self, info, **kwargs):
-        ss = Submission.objects.filter(user_id=info.context.user.id).order_by(
-            "-id"
-        )
+        user = info.context.user
+        user_id = user.id
+        if user.groups.all().filter(name="教师") or user.is_staff:
+            user_id = kwargs.get("user_id", user_id)
+        ss = Submission.objects.filter(user_id=user_id).order_by("-id")
         pid = kwargs.get("problem_id", None)
         if pid:
             ss = ss.filter(problem_id=pid)
@@ -511,18 +515,90 @@ class Query(ObjectType):
             i += 1
         return cmp_lines
 
+    @wrap_query_permission([IsAuthenticated])
+    def resolve_submission_statistics(self, info, **kwargs):
+        user = info.context.user
+        problem_id = kwargs.get("problem_id")
+        query_users = kwargs.get("query_users", None)
+        # 没有找到相应的题目
+        if not get_Object_or_None(Problem, pk=problem_id):
+            return None
+        # 找出所有符合条件的提交
+        submissions = Submission.objects.filter(problem_id=problem_id).only(
+            "user_id", "result", "submit_time"
+        )
+        if not submissions:
+            return None
+        # 如果不是教师和管理员，则只能查看自己的提交
+        if not user.groups.all().filter(name="教师") and not user.is_staff:
+            submissions = submissions.filter(user_id=user.id)
+        else:
+            uids = set()
+            # 传入了要查询的用户
+            if query_users and len(query_users) > 0:
+                uids = {
+                    user.id
+                    for user in User.objects.filter(
+                        profile__student_number__in=query_users
+                    )
+                }
+            else:
+                uids = {user.id for user in User.objects.only("id")}
+
+            # if not user.is_staff:
+            #     us = {
+            #         user.id
+            #         for user in user.groups.all()
+            #         .filter(name=user.profile.name)
+            #         .user_set.all()
+            #     }
+            #     uids = uids.intersection(us)
+
+            submissions = submissions.filter(user_id__in=uids)
+
+        total = {}
+        days = {}
+        for submission in submissions:
+            time = submission.submit_time.strftime("%Y-%m-%d")
+            accept = int(submission.result == "Accepted")
+            if time not in days.keys():
+                days[time] = {"total": 1, "accept": accept}
+            else:
+                days[time]["total"] += 1
+                days[time]["accept"] += accept
+
+            if submission.result not in total.keys():
+                total[submission.result] = 1
+            else:
+                total[submission.result] += 1
+
+        total_list = [
+            {"result": key, "count": value} for key, value in total.items()
+        ]
+        days_list = [
+            {"day": key, "total": value["total"], "accept": value["accept"]}
+            for key, value in days.items()
+        ]
+
+        return {"total": total_list, "days": days_list}
+
     def __get_submission(submission_id, info):
+        user = info.context.user
+        check_user = (
+            not user.groups.all().filter(name="教师") and not user.is_staff
+        )
         # 要比较的提交
-        submission = Submission.objects.filter(
-            id=submission_id, user_id=info.context.user.id
-        ).first()
+        submission = Submission.objects.filter(id=submission_id).first()
         if not submission:
+            return None, None
+        
+        if check_user and submission.user_id != user.id:
             return None, None
 
         # 同一题目、同一用户的前一个提交
         pre_submission = (
             Submission.objects.filter(
-                user_id=info.context.user.id,
+                user_id=submission.user_id,
                 id__lt=submission_id,
                 problem_id=submission.problem_id,
             )
@@ -603,7 +679,9 @@ class Query(ObjectType):
                 i += 116
             # 每行对应的Token
             tokens = tu.get_tokens(
-                extent=tu.get_extent("test.cpp", ((i + 1, 1), (i + 1, len(line))))
+                extent=tu.get_extent(
+                    "test.cpp", ((i + 1, 1), (i + 1, len(line)))
+                )
             )
             # Token对应的语法树节点
             nodes = []

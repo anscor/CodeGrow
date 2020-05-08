@@ -2,7 +2,7 @@
  * @Author: Anscor
  * @Date: 2020-04-11 16:06:22
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-15 22:12:38
+ * @LastEditTime: 2020-05-06 20:41:12
  * @Description: 公共模块
  */
 import { put, call } from 'redux-saga/effects'
@@ -113,16 +113,18 @@ export function* fetchUser(token) {
             id
             username
             email
+            isTeacher
+            isAdmin
             profile {
-            name
-            alias
-            sex
-            age
-            avatar
-            studentNumber
-            phone
-            createTime
-            updateTime
+                name
+                alias
+                sex
+                age
+                avatar
+                studentNumber
+                phone
+                createTime
+                updateTime
             }
         }
     }`, true, token);

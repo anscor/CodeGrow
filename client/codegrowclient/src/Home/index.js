@@ -2,7 +2,7 @@
  * @Author: Anscor
  * @Date: 2020-04-10 16:46:56
  * @LastEditors: Anscor
- * @LastEditTime: 2020-04-28 18:45:17
+ * @LastEditTime: 2020-05-08 10:42:13
  * @Description: Home
  */
 import React from 'react'
@@ -55,19 +55,31 @@ const HomeUI = props => {
     const problemRender = record => {
         const problemColumns = [
             { title: "题目ID", dataIndex: "id", key: "id" },
-            { title: "题目名称", dataIndex: "name", key: "name" },
             { title: "题目标签", dataIndex: "label", key: "label" },
             {
-                title: "题目描述",
-                dataIndex: "description",
-                key: "description",
-                render: text => (<Button
-                    onClick={() => props.descClick(text)}
+                title: "题目名称",
+                dataIndex: "name",
+                key: "name",
+                render: (text, record) => (<Button
+                    onClick={() => props.descClick(record.description)}
                     type="link">
-                    题目描述
+                    {text}
                 </Button>)
             },
             { title: "创建时间", dataIndex: "create_time", key: "create_time" },
+            {
+                title: "提交统计",
+                dataIndex: "submission_statistics",
+                key: "submission_statistics",
+                render: (_, record) => (<Link to={{
+                    pathname: "/statistics/",
+                    state: {
+                        id: record.id
+                    }
+                }}>
+                    提交统计
+                </Link>)
+            },
             {
                 title: "", dataIndex: "submissions",
                 key: "submissions",
@@ -80,7 +92,7 @@ const HomeUI = props => {
                             }
                         }}
                         disabled={props.disabled}>
-                        我的提交
+                        提交列表
                     </Link>);
                 }
             },
@@ -128,7 +140,8 @@ const mapStateToProps = state => {
         problems: state.top.problems,
         disabled: state.home.disabled,
         visible: state.home.visible,
-        desc: state.home.desc
+        desc: state.home.desc,
+        user: state.top.user
     }
 }
 
