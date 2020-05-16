@@ -12,11 +12,6 @@ class ProblemSet(models.Model):
         verbose_name="创建者id",
     )
 
-    # 数据导入过程中使用，成品中删除
-    problem_set_id = models.CharField(
-        max_length=64, null=True, blank=True, verbose_name="题目集id", unique=True
-    )
-
     name = models.CharField(
         max_length=64, null=True, blank=True, verbose_name="题目集名称", unique=True
     )
@@ -55,11 +50,6 @@ class Problem(models.Model):
         on_delete=models.DO_NOTHING,
         related_name="updated_problems",
         verbose_name="更新者id",
-    )
-
-    # 数据导入过程中使用，成品中删除
-    problem_id = models.CharField(
-        max_length=64, null=True, blank=True, verbose_name="题目id", unique=True
     )
 
     name = models.CharField(

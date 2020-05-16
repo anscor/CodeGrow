@@ -11,11 +11,6 @@ class Submission(models.Model):
         Problem, models.DO_NOTHING, related_name="submissions"
     )
 
-    # 提交代码在OJ上的运行id，用于数据迁移，成品时删除
-    rid = models.CharField(
-        verbose_name="运行id", null=True, blank=True, max_length=64
-    )
-
     code = models.TextField(verbose_name="代码")
     result = models.CharField(verbose_name="结果", max_length=64)
     memory = models.IntegerField(verbose_name="使用内存")
