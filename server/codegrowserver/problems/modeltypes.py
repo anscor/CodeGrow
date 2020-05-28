@@ -18,7 +18,7 @@ import graphene
 class ProblemSetType(DjangoObjectType):
     class Meta:
         model = ProblemSet
-        exclude_fields = ["creator", "problem_set_id"]
+        exclude_fields = ["creator"]
 
 
 class ProblemType(DjangoObjectType):
@@ -33,4 +33,4 @@ class ProblemType(DjangoObjectType):
 
     class Meta:
         model = Problem
-        exclude_fields = ["creator", "updater", "problem_id"]
+        exclude_fields = ["creator", "updater"]

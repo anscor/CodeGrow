@@ -26,7 +26,7 @@ class SubmissionType(DjangoObjectType):
 
     class Meta:
         model = Submission
-        exclude_fields = ["user", "rid"]
+        exclude_fields = ["user"]
 
 
 class CodeTextLineCmpType(DjangoObjectType):
